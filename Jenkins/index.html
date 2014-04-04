@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <title>Jenkins</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" type="text/css" href="/haze.css?1396595441"><link rel="stylesheet" type="text/css" href="/pygments.css?1396595441">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="description" content="Jenkins">
+  <meta name="author" content="Fredrik Håård">
+</head>
+<body>
+    <section class="page">
+      <header class="page">
+        <h1>Fredrik Håård's Blaag</h1>
+      </header>
+      <div class="blurbs">
+        <span>
+<a class="menu_link centered" href="http://twitter.com/fhaard">@fhaard</a>
+<div class="fineprint box blurb">
+I'm a programmer, consultant, developer, occasional teacher and
+speaker. Among my least disliked programming languages are Python, and
+a majority of these posts are related to Python in one way or another.
+</div>
+<div class="blurb">
+    <a href="https://flattr.com/submit/auto?user_id=fhaard&url=http://blaag.haard.se&title=Python%20Blaag&language=en_GB&tags=python,blog,programming&category=text">
+        <img src="https://api.flattr.com/button/flattr-badge-large.png"
+        alt="Flattr this blog" />
+    </a>
+</div>
+<div class='blurb'>
+	<a href='http://www.metallapan.se'>
+		<img src='http://metallapan.se/img/metallapan_small_black.png' style='position:relative; left: -15px'/>
+	</a>
+</div>
+        </span>
+        <a href="/rss.xml" class="menu_link centered">RSS Feed</a>
+      </div>
+      <div class="blog">
+        <article id="Jenkins" class="blog box">
+          <div class="document" id="Jenkins">
+            <div class="document" id="jenkins">
+<h1 class="title">Jenkins</h1>
+<p>Recently, I wanted to migrate some lightweight services from a virtual
+host to an account at <a class="reference external" href="http://www.webfaction.com/">Webfaction</a>, since running a wiki/issue tracker
+(<a class="reference external" href="http://trac.edgewall.org/">Trac</a>) and CI server (<a class="reference external" href="http://jenkins-ci.org/">Jenkins</a>) for a couple of low-volume projects
+really shouldn’t take a whole machine of it’s own. Or should it?</p>
+<p>This is when I realized that Jenkins is heavyweight in a world of
+cloud and shared hosts. I already kinda knew, since I've been
+administrating a Jenkins installation that claims several gigs of RAM,
+but that's with over thirty Maven projects and a pretty high load.</p>
+<p>Firing Jenkins up and configuring two (Ant) projects, it claims ~150Mb
+RAM - for doing nothing. On a shared host, that’s unacceptable. Under
+the old RAM limits on Webfaction, it’d be impossible to run, now its
+just claiming 3/5 of my total memory allotment.</p>
+<p>So yesterday I set up continuous integration using a Python script
+that runs the build, determines fail or success, and publishes the log
+and/or artifacts; it took a bit less than an hour to get working from
+scratch (admittedly using my own Mercurial lib for integration).</p>
+<p>Now I'm thinking of maybe creating something useful out of this. Right
+now, I publish logs as static web pages, but I could just post them as
+wiki pages to Trac via <a class="reference external" href="http://trac-hacks.org/wiki/XmlRpcPlugin">RPC</a>. That would allow logs to tie into the
+ticket system and source browser, and I could show build status right
+there on the Kanban-ish-board next to the tickets.</p>
+<p>I've got no firm design done yet, but I'm thinking about what the
+requirements for a minimalistic CI tool should be:</p>
+<blockquote>
+<ul class="simple">
+<li>Take no resources apart from disk space when idle</li>
+<li>Be able to publish fail and success logs in a useful format<ul>
+<li>It should be trivial (for real) to implement support for new targets for result publishing</li>
+</ul>
+</li>
+<li>Ability to limit resource usage (number of concurrent builds)</li>
+<li>Jobs can trigger each other</li>
+<li>more?</li>
+</ul>
+</blockquote>
+</div>
+          </div>
+          <div class="timestamp">
+            Blaag created 111228 13:21
+          </div>
+          <div class="fullcomments">
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+              /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+              var disqus_shortname = 'devrantblaag';
+              var disqus_identifier = 'Jenkins';
+              /* * * DON'T EDIT BELOW THIS LINE * * */
+              (function(d) {
+              var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+            <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+          </div>
+        </article>
+        <footer class="page">
+          <p class="fineprint"><script type="text/javascript"><!--
+google_ad_client = "ca-pub-8024096273645887";
+/* Blaag-footer-smaller */
+google_ad_slot = "2686503142";
+google_ad_width = 468;
+google_ad_height = 60;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<br/>
+
+Page created using <a
+href='https://bitbucket.org/haard/blaag'>blaag</a> 
+and abusing <a href='http://docutils.sourceforge.net'>docutils</a>.
+<a href='/rss.xml'>RSS Feed</a> generated using <a
+href='http://www.dalkescientific.com/Python/PyRSS2Gen.html'>PyRSS2Gen</a>.
+</p>
+        </footer>
+</div>
+      <nav class="blogs">
+        <a href="/" class="menu_link">- index -</a>
+        <h4>My recent posts</h4>
+        <a href="http://blaag.haard.se/Call-for-Proposals--PyCon-Sweden-2014" class="menu_link">Call for Proposals: PyCon Sweden 2014!</a><a href="http://blaag.haard.se/Basic-Python-course-in-Karlskona" class="menu_link">Basic Python course in Karlskona</a><a href="http://blaag.haard.se/Embedding-Jython-in-Java-Applications" class="menu_link">Embedding Jython in Java Applications</a><a href="http://blaag.haard.se/I-accidentally-the-server" class="menu_link">I accidentally the server</a><a href="http://blaag.haard.se/BitSynchHub-now-supports-git--gitapi-released--new-hgapi-version" class="menu_link">BitSynchHub now supports git, gitapi released, new hgapi version</a><a href="http://blaag.haard.se/Synchronize-Bitbucket-to-Github-automatically" class="menu_link">Synchronize Bitbucket to Github automatically</a><a href="http://blaag.haard.se/See-you-in-Florence-this-summer" class="menu_link">See you in Florence this summer?</a><a href="http://blaag.haard.se/Batteries-included--Download--unzip-and-parse-in-13-lines" class="menu_link">Batteries included: Download, unzip and parse in 13 lines</a><a href="http://blaag.haard.se/WGS-84-distance-calculations-at-the-speed-of-C" class="menu_link">WGS-84 distance calculations at the speed of C</a><a href="http://blaag.haard.se/pyRest-part-5--You-can-actually-use-this" class="menu_link">pyRest part 5: You can actually use this</a><a href="http://blaag.haard.se/pyRest-part-4--Separating-the-parts" class="menu_link">pyRest part 4: Separating the parts</a><a href="http://blaag.haard.se/pyRest-part-3--Routing-and-responsibilities" class="menu_link">pyRest part 3: Routing and responsibilities</a><a href="http://blaag.haard.se/pyRest-part-2--Hooking-the-API" class="menu_link">pyRest part 2: Hooking the API</a><a href="http://blaag.haard.se/Simple-REST-ful---ish--exposure-of-Python-APIs" class="menu_link">Simple REST-ful (-ish) exposure of Python APIs</a><a href="http://blaag.haard.se/Sending-non-valid-names-as-arguments" class="menu_link">Sending non-valid names as arguments</a><a href="http://blaag.haard.se/See-me-on-an-island" class="menu_link">See me on an island!</a><a href="http://blaag.haard.se/You-should-send-a-presentation-proposal-to-PyCon" class="menu_link">You should send a presentation proposal to PyCon</a><a href="http://blaag.haard.se/Using-the-AST-to-hack-constants-into-Python" class="menu_link">Using the AST to hack constants into Python</a><a href="http://blaag.haard.se/EuroPython-impressions" class="menu_link">EuroPython impressions</a><a href="http://blaag.haard.se/You-deserve-practice" class="menu_link">You deserve practice</a><a href="http://blaag.haard.se/Version-1-2-0-of-hgapi-released" class="menu_link">Version 1.2.0 of hgapi released</a><a href="http://blaag.haard.se/Protocol-specifications-written-in-Python" class="menu_link">Protocol specifications written in Python</a><a href="http://blaag.haard.se/PyCon-2012---the-other-stuff" class="menu_link">PyCon 2012 - the other stuff</a><a href="http://blaag.haard.se/rant--Dare-to-show-your-code" class="menu_link">[rant] Dare to show your code</a><a href="http://blaag.haard.se/Python-Closures-and-Decorators--Pt--2" class="menu_link">Python Closures and Decorators (Pt. 2)</a><a href="http://blaag.haard.se/Python-Closures-and-Decorators--Pt--1" class="menu_link">Python Closures and Decorators (Pt. 1)</a><a href="http://blaag.haard.se/Blaag-using-Genshi--greedy-bloggers-adding-ads--and-demographics--Also-ranting" class="menu_link">Blaag using Genshi, greedy bloggers adding ads, and demographics. Also ranting.</a><a href="http://blaag.haard.se/Your-favourite-programming-language-is-not-good-enough" class="menu_link">Your favourite programming language is not good enough</a><a href="http://blaag.haard.se/Python-API-to-git--gitapi" class="menu_link">Python API to git: gitapi</a><a href="http://blaag.haard.se/Explaining-comprehensions-to-programmers" class="menu_link">Explaining comprehensions to programmers</a><a href="http://blaag.haard.se/Why-Python-is-important-for-you" class="menu_link">Why Python is important for you</a><a href="http://blaag.haard.se/Using-Python-to-get-rid-of--doc" class="menu_link">Using Python to get rid of .doc</a><a href="http://blaag.haard.se/Mercurial-in-Python-3--promoting-hgapi" class="menu_link">Mercurial in Python 3: promoting hgapi</a><a href="http://blaag.haard.se/What-s-the-point-of-properties-in-Python" class="menu_link">What's the point of properties in Python?</a><a href="http://blaag.haard.se/hgapi-1-1-0" class="menu_link">hgapi 1.1.0</a><a href="http://blaag.haard.se/Jenkins" class="menu_link">Jenkins</a><a href="http://blaag.haard.se/Problem-exist-between-chair-and-keyboard" class="menu_link">Problem exist between chair and keyboard</a><a href="http://blaag.haard.se/Autohook-updated" class="menu_link">Autohook updated</a><a href="http://blaag.haard.se/Tools-for-better-Python" class="menu_link">Tools for better Python</a><a href="http://blaag.haard.se/On-useless-testing" class="menu_link">On useless testing</a><a href="http://blaag.haard.se/Styling" class="menu_link">Styling</a><a href="http://blaag.haard.se/RSS-support-is-go" class="menu_link">RSS support is go!</a><a href="http://blaag.haard.se/Progress-is-made" class="menu_link">Progress is made</a><a href="http://blaag.haard.se/It-s-alive" class="menu_link">﻿It's alive!</a>
+      </nav>
+    </section>
+    <!-- Add JavaScript after this point, it makes the page load faster when client does not need to interpret JS at start -->
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-27784490-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    <script type="text/javascript">
+      var  disqus_shortname = 'devrantblaag';
+      (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+      }());
+    </script>
+</body>
+</html>

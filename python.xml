@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rss version="2.0"><channel><title>Fredrik Håård's Blaag</title><link>http://blaag.haard.se/</link><description>YAB</description><lastBuildDate>Fri, 04 Apr 2014 07:10:42 GMT</lastBuildDate><generator>PyRSS2Gen-1.1.0</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Call for Proposals: PyCon Sweden 2014!</title><link>http://blaag.haard.se/Call-for-Proposals--PyCon-Sweden-2014</link><description>&lt;div class="document" id="call-for-proposals-pycon-sweden-2014"&gt;
+&lt;h1 class="title"&gt;Call for Proposals: PyCon Sweden 2014!&lt;/h1&gt;
+&lt;p&gt;That's right, &lt;a class="reference external" href="http://2014.pycon.se"&gt;PyCon Sweden 2014&lt;/a&gt; will take place in Stockholm on May 20-21, and you should be there!&lt;/p&gt;
+&lt;p&gt;Even better, you should propose a talk on anything related to Python, and/or see if your company would not like
+to sponsor the event - this is a chance to reach 250 developers over two days you don't want to miss.&lt;/p&gt;
+&lt;p&gt;This event will be the first national Python conference in Sweden - a country that has hosted two Europython
+and has vibrant user groups and meetups, but for some reason has not been able to pull together a national
+PyCon until now.&lt;/p&gt;
+&lt;p&gt;So join us in this exciting new endeavor, and if you're located in Sweden and interested in Python, it's free
+and as easy as filling in your name to &lt;a class="reference external" href="http://www.formpl.us/form/0B_LY_HLO2wmtM01WaTZsaHFfTlU"&gt;join&lt;/a&gt; the Python Sverige association and get involved - we'll have an
+annual meeting in conjunction with PyCon Sweden, and we'll need voulenteers for the conference.&lt;/p&gt;
+&lt;p&gt;Let's make this awesome!&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;!-- keywords: python pycon pyconse --&gt;
+&lt;/blockquote&gt;
+&lt;/div&gt;
+</description><category>pycon</category><guid isPermaLink="true">http://blaag.haard.se/Call-for-Proposals--PyCon-Sweden-2014</guid><pubDate>Thu, 20 Feb 2014 14:17:00 GMT</pubDate></item><item><title>BitSynchHub now supports git, gitapi released, new hgapi version</title><link>http://blaag.haard.se/BitSynchHub-now-supports-git--gitapi-released--new-hgapi-version</link><description>&lt;div class="document" id="bitsynchhub-now-supports-git-gitapi-released-new-hgapi-version"&gt;
+&lt;h1 class="title"&gt;BitSynchHub now supports git, gitapi released, new hgapi version&lt;/h1&gt;
+&lt;p&gt;Since I got several requests for &lt;a class="reference external" href="http://metallapan.se/bitsynchub/"&gt;BitSyncHub&lt;/a&gt; to support BitBucket Git repository synching to GitHub, I went ahead and added the functionality. The service will dedtect the appropriate repository type, and push specified branches - although the source branch will be ignored for now, so a branch speficiation of 'foo:bar' will simply push 'bar'.&lt;/p&gt;
+&lt;p&gt;To make this happen, I finally had to bring &lt;a class="reference external" href="https://bitbucket.org/haard/gitapi"&gt;gitapi&lt;/a&gt; a bit closer to completion, so I released the first version to &lt;a class="reference external" href="https://pypi.python.org/pypi/gitapi"&gt;PyPi&lt;/a&gt; for general consumption as well.&lt;/p&gt;
+&lt;p&gt;To top it all off, Jan Williems of &lt;a class="reference external" href="http://www.elevenbits.com/"&gt;elevenbits&lt;/a&gt; has added push/pull functionality and done a general cleanup of the &lt;a class="reference external" href="https://bitbucket.org/haard/hgapi"&gt;hgapi&lt;/a&gt; codebase, so version 1.7.1 just went up to PyPi. This release is all Jan's, I've done no work at all except for uploading his work.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;!-- keywords: python mercurial hg git hgapi gitapi bitsynchub bitbucket github --&gt;
+&lt;/blockquote&gt;
+&lt;/div&gt;
+</description><category>mercurial</category><guid isPermaLink="true">http://blaag.haard.se/BitSynchHub-now-supports-git--gitapi-released--new-hgapi-version</guid><pubDate>Thu, 12 Sep 2013 20:39:06 GMT</pubDate></item><item><title>Synchronize Bitbucket to Github automatically</title><link>http://blaag.haard.se/Synchronize-Bitbucket-to-Github-automatically</link><description>&lt;div class="document" id="synchronize-bitbucket-to-github-automatically"&gt;
+&lt;h1 class="title"&gt;Synchronize Bitbucket to Github automatically&lt;/h1&gt;
+&lt;h2 class="subtitle" id="introducing-bitsynchub"&gt;Introducing BitSyncHub&lt;/h2&gt;
+&lt;p&gt;Since I'm an automation nut, when I found &lt;a class="reference external" href="https://travis-ci.org"&gt;Travis CI&lt;/a&gt;, I was understandably excited - automatic running of my testcases for &lt;a class="reference external" href="https://bitbucket.org/haard/hgapi"&gt;hgapi&lt;/a&gt; from the repository as opposed to a pre-push hook (as I have had it set up since the beginning of time) would avoid the oh-so embarrassing mistakes of forgetting to add a new file to the repository and having a non-working version in the repo. I just have to set up some service to synch to the GitHub mirror and all will... be... well?&lt;/p&gt;
+&lt;p&gt;Turns out there was no such service. A hundred advices on how to mirror using push-hooks in your local repository, but since I don't always commit from the same computer, I would need to keep all instances (including future) set up properly, and never again could I be a tad lazy and accept a pull request instead of pushing it from my local repo. This, to me, is not an acceptable state of affairs.&lt;/p&gt;
+&lt;p&gt;So last week I spent a couple of hours setting up a new service, dubbed &lt;a class="reference external" href="http://www.metallapan.se/bitsynchub"&gt;BitSyncHub&lt;/a&gt;, that will accept POST requests from Bitbucket and synchronize a (Mercurial) repository with it's Github mirror. It is set up using &lt;a class="reference external" href="https://github.com/unbit/uwsgi"&gt;UWSGI&lt;/a&gt;, &lt;a class="reference external" href="https://bitbucket.org/haard/hgapi"&gt;hgapi&lt;/a&gt; with &lt;a class="reference external" href="http://hg-git.github.io"&gt;hg-git&lt;/a&gt;, and &lt;a class="reference external" href="http://celeryproject.org"&gt;Celery&lt;/a&gt; for job control. It's a bit rough in that it does not report errors (since it does not run synchronously), and always pushes to Github using the same certificate and &lt;a class="reference external" href="https://github.com/bitsynchub"&gt;user&lt;/a&gt;, but I've not been able to break it (recently), and it only requires a one-time setup and it will keep your branches in synch!&lt;/p&gt;
+&lt;!-- keywords: python github bitbucket git mercurial hg hgapi --&gt;
+&lt;/div&gt;
+</description><category>mercurial</category><guid isPermaLink="true">http://blaag.haard.se/Synchronize-Bitbucket-to-Github-automatically</guid><pubDate>Wed, 24 Jul 2013 20:13:21 GMT</pubDate></item><item><title>See you in Florence this summer?</title><link>http://blaag.haard.se/See-you-in-Florence-this-summer</link><description>&lt;div class="document" id="see-you-in-florence-this-summer"&gt;
+&lt;h1 class="title"&gt;See you in Florence this summer?&lt;/h1&gt;
+&lt;p&gt;I'll be in Florence for &lt;a class="reference external" href="http://ep2013.europython.eu/"&gt;EuroPython 2013&lt;/a&gt; and do (more or less) a follow-up to the training session I held last year - a very hands-on venture into Python lanugage and standard library features that will allow you to implement your bad ideas in awesome hacks and good ideas with beautiful magic. This is how fun we had last year!&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;img alt="/static/ep2012dcsl.jpg" src="/static/ep2012dcsl.jpg" style="width: 500px;" /&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Ok, so they're all looking at their screens, but that's kind of the point with a training session in my opinion, hands on keyboards as much as possible.&lt;/p&gt;
+&lt;p&gt;In other news, I have created a &lt;a class="reference external" href="https://gist.github.com/haard/5295600"&gt;gist&lt;/a&gt; with a cleaned up version of my fetch/unpack/csvparse &lt;a class="reference external" href="http://blaag.haard.se/Batteries-included--Download--unzip-and-parse-in-13-lines/"&gt;code&lt;/a&gt; incorporating some of the suggestions I got here and on Reddit.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;!-- keywords: python europython --&gt;
+&lt;/blockquote&gt;
+&lt;/div&gt;
+</description><category>python</category><guid isPermaLink="true">http://blaag.haard.se/See-you-in-Florence-this-summer</guid><pubDate>Wed, 03 Apr 2013 05:50:00 GMT</pubDate></item><item><title>Batteries included: Download, unzip and parse in 13 lines</title><link>http://blaag.haard.se/Batteries-included--Download--unzip-and-parse-in-13-lines</link><description>&lt;div class="document" id="batteries-included-download-unzip-and-parse-in-13-lines"&gt;
+&lt;h1 class="title"&gt;Batteries included: Download, unzip and parse in 13 lines&lt;/h1&gt;
+&lt;p&gt;The other day I needed to download some zip files, unpack them, parse the CSV files in them, and return the data as dicts. I did the very same thing a couple of years ago, and although the source is lost, I recall having a Python (2.4?) script of about two screens to do the download - so a hundred lines.
+When re-implementing the solution now that I know Python and the standard library better, I ended up with 12 lines written in just a few minutes - edited for blogging clarity it clocks in at 13 lines:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;pre class="code python literal-block"&gt;
+&lt;span class="keyword namespace"&gt;import&lt;/span&gt; &lt;span class="name namespace"&gt;zipfile&lt;/span&gt;&lt;span class="operator"&gt;,&lt;/span&gt; &lt;span class="name namespace"&gt;urllib&lt;/span&gt;&lt;span class="operator"&gt;,&lt;/span&gt; &lt;span class="name namespace"&gt;csv&lt;/span&gt;
+&lt;span class="keyword"&gt;def&lt;/span&gt; &lt;span class="name function"&gt;get_items&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;url&lt;/span&gt;&lt;span class="punctuation"&gt;):&lt;/span&gt;
+  &lt;span class="name builtin"&gt;zip&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;headers&lt;/span&gt; &lt;span class="operator"&gt;=&lt;/span&gt; &lt;span class="name"&gt;urllib&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;urlretrieve&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;url&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+  &lt;span class="keyword"&gt;with&lt;/span&gt; &lt;span class="name"&gt;zipfile&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;ZipFile&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name builtin"&gt;zip&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt; &lt;span class="keyword"&gt;as&lt;/span&gt; &lt;span class="name"&gt;zf&lt;/span&gt;&lt;span class="punctuation"&gt;:&lt;/span&gt;
+    &lt;span class="name"&gt;csvfiles&lt;/span&gt; &lt;span class="operator"&gt;=&lt;/span&gt; &lt;span class="punctuation"&gt;[&lt;/span&gt;&lt;span class="name"&gt;name&lt;/span&gt; &lt;span class="keyword"&gt;for&lt;/span&gt; &lt;span class="name"&gt;name&lt;/span&gt; &lt;span class="operator word"&gt;in&lt;/span&gt; &lt;span class="name"&gt;zf&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;namelist&lt;/span&gt;&lt;span class="punctuation"&gt;()&lt;/span&gt;
+                 &lt;span class="keyword"&gt;if&lt;/span&gt; &lt;span class="name"&gt;name&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;endswith&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="literal string"&gt;'.csv'&lt;/span&gt;&lt;span class="punctuation"&gt;)]&lt;/span&gt;
+    &lt;span class="keyword"&gt;for&lt;/span&gt; &lt;span class="name"&gt;filename&lt;/span&gt; &lt;span class="operator word"&gt;in&lt;/span&gt; &lt;span class="name"&gt;csvfiles&lt;/span&gt;&lt;span class="punctuation"&gt;:&lt;/span&gt;
+      &lt;span class="keyword"&gt;with&lt;/span&gt; &lt;span class="name"&gt;zf&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;open&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;filename&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt; &lt;span class="keyword"&gt;as&lt;/span&gt; &lt;span class="name"&gt;source&lt;/span&gt;&lt;span class="punctuation"&gt;:&lt;/span&gt;
+        &lt;span class="name"&gt;reader&lt;/span&gt; &lt;span class="operator"&gt;=&lt;/span&gt; &lt;span class="name"&gt;csv&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;DictReader&lt;/span&gt;&lt;span class="punctuation"&gt;([&lt;/span&gt;&lt;span class="name"&gt;line&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;decode&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="literal string"&gt;'iso-8859-1'&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+                                  &lt;span class="keyword"&gt;for&lt;/span&gt; &lt;span class="name"&gt;line&lt;/span&gt; &lt;span class="operator word"&gt;in&lt;/span&gt; &lt;span class="name"&gt;source&lt;/span&gt;&lt;span class="punctuation"&gt;])&lt;/span&gt;
+        &lt;span class="keyword"&gt;for&lt;/span&gt; &lt;span class="name"&gt;item&lt;/span&gt; &lt;span class="operator word"&gt;in&lt;/span&gt; &lt;span class="name"&gt;reader&lt;/span&gt;&lt;span class="punctuation"&gt;:&lt;/span&gt;
+          &lt;span class="keyword"&gt;yield&lt;/span&gt; &lt;span class="name"&gt;item&lt;/span&gt;
+  &lt;span class="name"&gt;os&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;unlink&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name builtin"&gt;zip&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;As trivial as it is, I think it is a nice example of just how much you can do with very little (coding) effort.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Edit&lt;/em&gt;: I created a &lt;a class="reference external" href="https://gist.github.com/haard/5295600"&gt;gist&lt;/a&gt; with a cleaned up version using codecs.getreader. I'll be leaving this version as it is though.&lt;/p&gt;
+&lt;!-- keywords: python zip zipfile csv urllib terse --&gt;
+&lt;/div&gt;
+</description><category>python</category><guid isPermaLink="true">http://blaag.haard.se/Batteries-included--Download--unzip-and-parse-in-13-lines</guid><pubDate>Sun, 31 Mar 2013 10:12:11 GMT</pubDate></item><item><title>WGS-84 distance calculations at the speed of C</title><link>http://blaag.haard.se/WGS-84-distance-calculations-at-the-speed-of-C</link><description>&lt;div class="document" id="wgs-84-distance-calculations-at-the-speed-of-c"&gt;
+&lt;h1 class="title"&gt;WGS-84 distance calculations at the speed of C&lt;/h1&gt;
+&lt;p&gt;When we started out doing fleet management at Visual Units, one thing was really hard to get right - distance calculations. There was no end of information available, but most-to-all of it was on a level of mathematics far beyond a poor developer who feels that anything beyond discrete mathematics and basic geometry and statistics really should be somebody else's problem. The implementations that could be found were closed-source licensed version we really could not afford at that stage.&lt;/p&gt;
+&lt;p&gt;For a while we got by using a solution that relied on having a variant of Lambert conformal conic projection coordinates - it was sufficiently exact if not perfect, and our maps used the same projection, so it worked - although there was the added burden of transforming our stored (WGS-84) coordinates to Lambert every time we needed calculations done. A couple of years ago, however, we switched to &lt;a class="reference external" href="https://developers.google.com/maps/"&gt;Google Maps API&lt;/a&gt; and so we really had no use for Lambert - and increased load and precision demands made using the current solution a worse and worse choice.&lt;/p&gt;
+&lt;p&gt;Enter &lt;a class="reference external" href="http://www.movable-type.co.uk/"&gt;Chris Veness&lt;/a&gt;. Or rather, enter his &lt;a class="reference external" href="http://www.movable-type.co.uk/scripts/latlong-vincenty.html"&gt;implementation&lt;/a&gt; of the &lt;a class="reference external" href="http://www.ngs.noaa.gov/PUBS_LIB/inverse.pdf"&gt;Vincenty inverse formula&lt;/a&gt; (pdf). Even though the math is beyond me, porting the Javascript implementation to Python was straightforward, and some testing showed that &lt;a class="reference external" href="https://bitbucket.org/visualunits/vutools/src/e18fdfb9eed5f5b33c00c715a2a18ca888cfe559/distance/distance.py"&gt;the result&lt;/a&gt; was both faster and had better precision than the previous solution.&lt;/p&gt;
+&lt;p&gt;Fast-forward to a few months ago, suddenly the performance is starting to look like something that could become a problem. We have many reasons for doing distance calculations, and while the batch jobs were not a problem, any amount of time that can be shaved off user-initiated actions is welcome.&lt;/p&gt;
+&lt;p&gt;So, I thought to myself, I've ported it once, how hard can it be to do it again? After all, when raw speed becomes the issue, the Python programmer reaches for C. Porting it was once again straightforward, mapping the Python function&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;pre class="code python literal-block"&gt;
+&lt;span class="keyword"&gt;def&lt;/span&gt; &lt;span class="name function"&gt;distance&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;x1&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;y1&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;x2&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;y2&lt;/span&gt;&lt;span class="punctuation"&gt;):&lt;/span&gt;
+    &lt;span class="operator"&gt;...&lt;/span&gt;
+&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;into&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;pre class="code c literal-block"&gt;
+&lt;span class="keyword"&gt;const&lt;/span&gt; &lt;span class="keyword type"&gt;double&lt;/span&gt; &lt;span class="name function"&gt;distance&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="keyword"&gt;const&lt;/span&gt; &lt;span class="keyword type"&gt;double&lt;/span&gt; &lt;span class="name"&gt;x1&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="keyword"&gt;const&lt;/span&gt; &lt;span class="keyword type"&gt;double&lt;/span&gt; &lt;span class="name"&gt;y1&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt;
+                      &lt;span class="keyword"&gt;const&lt;/span&gt; &lt;span class="keyword type"&gt;double&lt;/span&gt; &lt;span class="name"&gt;x2&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="keyword"&gt;const&lt;/span&gt; &lt;span class="keyword type"&gt;double&lt;/span&gt; &lt;span class="name"&gt;y2&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+&lt;span class="punctuation"&gt;{&lt;/span&gt;
+    &lt;span class="punctuation"&gt;...&lt;/span&gt;
+&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;The &lt;a class="reference external" href="https://bitbucket.org/visualunits/vutools/src/e18fdfb9eed5/distance/distance.c"&gt;resulting C code&lt;/a&gt; is almost identical to he Python (and Javascript) implementations but runs about 6 times faster than the Python implementation. Allowing batch submission of calculations instead of calling once for every calculation, eliminating some FFI overhead, would increase the speed further.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;pre class="code literal-block"&gt;
+$ python2.7 -m tests.test_distance
+Time elapsed for 100000 calculations in
+    Python: 1952.70
+    C: 300.46
+    Factor: 6.50
+&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Wrapping the C and calling it was simple enough using ctypes, and I've added fallback to the Python implementation if the C shared library cannot be found; a small __init__.py in the package hooks up the correct version:&lt;/p&gt;
+&lt;pre class="code python literal-block"&gt;
+&lt;span class="keyword namespace"&gt;from&lt;/span&gt; &lt;span class="name namespace"&gt;.distance&lt;/span&gt; &lt;span class="keyword namespace"&gt;import&lt;/span&gt; &lt;span class="name"&gt;distance&lt;/span&gt; &lt;span class="keyword"&gt;as&lt;/span&gt; &lt;span class="name"&gt;_py_distance&lt;/span&gt;
+
+&lt;span class="keyword"&gt;try&lt;/span&gt;&lt;span class="punctuation"&gt;:&lt;/span&gt;
+    &lt;span class="keyword namespace"&gt;from&lt;/span&gt; &lt;span class="name namespace"&gt;ctypes&lt;/span&gt; &lt;span class="keyword namespace"&gt;import&lt;/span&gt; &lt;span class="name"&gt;cdll&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;c_double&lt;/span&gt;
+    &lt;span class="name"&gt;dll&lt;/span&gt; &lt;span class="operator"&gt;=&lt;/span&gt; &lt;span class="name"&gt;cdll&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;LoadLibrary&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="literal string"&gt;'cDistance.so'&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+    &lt;span class="name"&gt;dll&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;distance&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;restype&lt;/span&gt; &lt;span class="operator"&gt;=&lt;/span&gt; &lt;span class="name"&gt;c_double&lt;/span&gt;
+    &lt;span class="name"&gt;dll&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;distance&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;argtypes&lt;/span&gt; &lt;span class="operator"&gt;=&lt;/span&gt; &lt;span class="punctuation"&gt;[&lt;/span&gt;&lt;span class="name"&gt;c_double&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;c_double&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;c_double&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;c_double&lt;/span&gt;&lt;span class="punctuation"&gt;]&lt;/span&gt;
+    &lt;span class="name"&gt;distance&lt;/span&gt; &lt;span class="operator"&gt;=&lt;/span&gt; &lt;span class="name"&gt;dll&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;distance&lt;/span&gt;
+    &lt;span class="name"&gt;_c_distance&lt;/span&gt; &lt;span class="operator"&gt;=&lt;/span&gt; &lt;span class="name"&gt;dll&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;distance&lt;/span&gt;
+&lt;span class="keyword"&gt;except&lt;/span&gt; &lt;span class="name exception"&gt;OSError&lt;/span&gt;&lt;span class="punctuation"&gt;:&lt;/span&gt; &lt;span class="comment"&gt;#Fall back to Python implementation&lt;/span&gt;
+    &lt;span class="name"&gt;distance&lt;/span&gt; &lt;span class="operator"&gt;=&lt;/span&gt; &lt;span class="name"&gt;_py_distance&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;Of course, this depends on the C code being compiled into cDistance.so and that file being available for linking - and it keeps the .so hardcoded so a windows DLL wont work. I really did intend to clean it up more before making it open source, but since I've been meaning to start open sourcing some of our tools for years now and never really found the time, I thought it would be better to thow it out there, and postpone making it pretty instead. I hope someone can find some use in this, and I'll try to get it cleaned upp and packaged Real Soon Now.&lt;/p&gt;
+&lt;!-- keywords: python coordinates google maps c ctypes ffi --&gt;
+&lt;/div&gt;
+</description><category>python</category><guid isPermaLink="true">http://blaag.haard.se/WGS-84-distance-calculations-at-the-speed-of-C</guid><pubDate>Thu, 21 Feb 2013 18:46:57 GMT</pubDate></item><item><title>pyRest part 5: You can actually use this</title><link>http://blaag.haard.se/pyRest-part-5--You-can-actually-use-this</link><description>&lt;div class="document" id="pyrest-part-5-you-can-actually-use-this"&gt;
+&lt;h1 class="title"&gt;pyRest part 5: You can actually use this&lt;/h1&gt;
+&lt;p&gt;(&lt;a class="reference external" href="http://blaag.haard.se/Simple-REST-ful---ish--exposure-of-Python-APIs"&gt;part 1&lt;/a&gt;, &lt;a class="reference external" href="http://blaag.haard.se/pyRest-part-2--Hooking-the-API/"&gt;part 2&lt;/a&gt;, &lt;a class="reference external" href="http://blaag.haard.se/pyRest-part-3--Routing-and-responsibilities"&gt;part 3&lt;/a&gt;, &lt;a class="reference external" href="http://blaag.haard.se/pyRest-part-4--Separating-the-parts/"&gt;part 4&lt;/a&gt;)&lt;/p&gt;
+&lt;p&gt;I'm almost done with the parts to make this project PyPI ready - it can now work on your application as long as you implement the actual code to route calls to the right part of your API - this works:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;pre class="code literal-block"&gt;
+python -m pyrest.launcher  --server pyrest.integration.cherry \
+       --api=pyrest.examples.hg
+&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Configuration can also be done using a config file instead of or together with command-line arguments. This means that if you can describe your API's usage using modules (representing resources) and post/put/get/delete functions in those modules, you can then pretty much just copy the line above and have a REST interface as long as you return data that the json library can understand how to serialize.&lt;/p&gt;
+&lt;p&gt;The magic is all in the new &lt;a class="reference external" href="https://bitbucket.org/haard/pyrest/src/77878107e5f2e126802678664824ebc7f607d442/pyrest/launcher.py?at=default"&gt;launcher.py&lt;/a&gt;, which reads configuration, instantiates pyrest, an appserver interface, and hooks up the specified API. Very little other changes needed to be made - none to pyrest.py, and for &lt;a class="reference external" href="https://bitbucket.org/haard/pyrest/src/77878107e5f2/pyrest/integration/cherry.py?at=default"&gt;cherry.py&lt;/a&gt; the only changes was to move functionality from the 'if dunder main' to a new start() function.&lt;/p&gt;
+&lt;p&gt;Time for a goal check!&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Create a tool that can expose a Python API in a RESTish fashion&lt;/li&gt;
+&lt;li&gt;The API itself must not have to know about the tool&lt;/li&gt;
+&lt;li&gt;It must handle HTTP errors&lt;/li&gt;
+&lt;li&gt;It must run on Python 3.2+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+These are all done, with the new launcher module taking care of reading configuration/arguments and wiring up the correct backend server - although right now, there's only the CherryPy version available.&lt;/blockquote&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;It must run on at least CherryPy and two other webapp frameworks TBD (no, not Django)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+Not OK, just CherryPy implemented.&lt;/blockquote&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;It must be able to encode data into JSON before returning it&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+Partially OK, but there's no clean way of specializing the serialization if you send data that is not handled by the standard library json module.&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;In addition to those goals, I'll also have to create a setup.py to make the tool installable before I can call version 1.0.0&lt;/p&gt;
+&lt;p&gt;I'd also like to take the time to give a huge thanks to the people over at &lt;a class="reference external" href="http://www.dzone.com"&gt;DZone&lt;/a&gt; - not only did they ask if they could repost my blogs (which they don't have to since I allow anyone to do anything with it as long as they don't blame me for damage done...), but they actually sent me goodies all the way over the Atlantic! They actually sent me nerf guns (and a t-shirt and other stuff) &lt;em&gt;halfway across the globe&lt;/em&gt; just because they like my blog. Crazy. If everyone who likes this blog did that I'd probably have, like, &lt;em&gt;three&lt;/em&gt; nerf guns!&lt;/p&gt;
+&lt;p&gt;That being said, code is as always available at &lt;a class="reference external" href="https://bitbucket.org/haard/pyrest"&gt;Bitbucket&lt;/a&gt;.&lt;/p&gt;
+&lt;!-- keywords: python api hgapi cherrypy rest --&gt;
+&lt;/div&gt;
+</description><category>python</category><guid isPermaLink="true">http://blaag.haard.se/pyRest-part-5--You-can-actually-use-this</guid><pubDate>Mon, 11 Feb 2013 22:30:06 GMT</pubDate></item><item><title>pyRest part 4: Separating the parts</title><link>http://blaag.haard.se/pyRest-part-4--Separating-the-parts</link><description>&lt;div class="document" id="pyrest-part-4-separating-the-parts"&gt;
+&lt;h1 class="title"&gt;pyRest part 4: Separating the parts&lt;/h1&gt;
+&lt;p&gt;(&lt;a class="reference external" href="http://blaag.haard.se/Simple-REST-ful---ish--exposure-of-Python-APIs"&gt;part 1&lt;/a&gt;, &lt;a class="reference external" href="http://blaag.haard.se/pyRest-part-2--Hooking-the-API/"&gt;part 2&lt;/a&gt;, &lt;a class="reference external" href="http://blaag.haard.se/pyRest-part-3--Routing-and-responsibilities"&gt;part 3&lt;/a&gt;)&lt;/p&gt;
+&lt;p&gt;I've now split the code into separate parts - &lt;a class="reference external" href="https://bitbucket.org/haard/pyrest/src/faa29b2729f481ba069038ce0a63d9651c15fadf/pyrest/pyrest.py?at=default"&gt;pyrest.py&lt;/a&gt; now only has generic functionality for hooking and routing, along with a bunch of helpers to create responses with HTTP response types. In fact, it's only 35 lines of code, and that's the entire 'core' of pyRest so far.&lt;/p&gt;
+&lt;p&gt;The CherryPy integration has moved to the pyrest.integration package as &lt;a class="reference external" href="https://bitbucket.org/haard/pyrest/src/faa29b2729f4/pyrest/integration/cherry.py?at=default"&gt;cherry.py&lt;/a&gt; - it's still pretty clumsy to use (&lt;em&gt;python -m pyrest.integration.cherry&lt;/em&gt; can _only_ hook up the hgapi example code), and the hgapi implementation has been moved into the pyrest.examples.hg package.
+The CherryPy parts have not changed much beyond always expecting a &lt;em&gt;Response&lt;/em&gt; tuple and using it to set response status and content, but the hgapi integration now sports a &lt;em&gt;post&lt;/em&gt; function, allowing me to commit the code just written using itself! &lt;a class="reference external" href="https://bitbucket.org/haard/pyrest/src/faa29b2729f481ba069038ce0a63d9651c15fadf/pyrest/examples/hg/changeset.py?at=default"&gt;changeset.py&lt;/a&gt; also uses the new Response helpers to create the return values.&lt;/p&gt;
+&lt;p&gt;The code was committed using a POST request to &lt;em&gt;/api/changeset?message=Comitting via pyrest&lt;/em&gt;. Next, I'm planning to make the Mercurial integration useful, and/or the CherryPy integration a bit more robust.&lt;/p&gt;
+&lt;p&gt;Code is as always available at &lt;a class="reference external" href="https://bitbucket.org/haard/pyrest"&gt;Bitbucket&lt;/a&gt;.&lt;/p&gt;
+&lt;!-- keywords: python api hgapi cherrypy rest --&gt;
+&lt;/div&gt;
+</description><category>python</category><guid isPermaLink="true">http://blaag.haard.se/pyRest-part-4--Separating-the-parts</guid><pubDate>Thu, 20 Dec 2012 12:44:09 GMT</pubDate></item><item><title>pyRest part 3: Routing and responsibilities</title><link>http://blaag.haard.se/pyRest-part-3--Routing-and-responsibilities</link><description>&lt;div class="document" id="pyrest-part-3-routing-and-responsibilities"&gt;
+&lt;h1 class="title"&gt;pyRest part 3: Routing and responsibilities&lt;/h1&gt;
+&lt;p&gt;In &lt;a class="reference external" href="http://blaag.haard.se/pyRest-part-2--Hooking-the-API/"&gt;part 2&lt;/a&gt;, I hooked up the API to CherryPy in a very crude fashion, and this time we'll look at how we can add handlers for resources in a less clumsy way. I decided to keep handlers on one 'level' only - that is, /sketch/parrot and /sketch will both be handled by the /sketch handler. This is because I find that the same sub-resource often is present in several places (what about &lt;em&gt;/props/parrot&lt;/em&gt;?) and having handlers like this simplifies stuff and makes the magic more readable.&lt;/p&gt;
+&lt;p&gt;That magic looks like this - it is passed a package, find all modules that has at least one of get/post/put/delete implemented, and stores them in a name-&amp;gt;module dict.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;pre class="code python literal-block"&gt;
+&lt;span class="keyword"&gt;def&lt;/span&gt; &lt;span class="name function"&gt;get_handlers&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;package&lt;/span&gt;&lt;span class="punctuation"&gt;):&lt;/span&gt;
+    &lt;span class="name"&gt;handlers&lt;/span&gt; &lt;span class="operator"&gt;=&lt;/span&gt; &lt;span class="punctuation"&gt;{}&lt;/span&gt;
+    &lt;span class="keyword"&gt;for&lt;/span&gt; &lt;span class="name"&gt;member_name&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;member&lt;/span&gt; &lt;span class="operator word"&gt;in&lt;/span&gt;
+        &lt;span class="punctuation"&gt;[&lt;/span&gt;&lt;span class="name"&gt;module&lt;/span&gt; &lt;span class="keyword"&gt;for&lt;/span&gt; &lt;span class="name"&gt;module&lt;/span&gt; &lt;span class="operator word"&gt;in&lt;/span&gt; &lt;span class="name"&gt;inspect&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;getmembers&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;package&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+                &lt;span class="keyword"&gt;if&lt;/span&gt; &lt;span class="name"&gt;inspect&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;ismodule&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;module&lt;/span&gt;&lt;span class="punctuation"&gt;[&lt;/span&gt;&lt;span class="literal number integer"&gt;1&lt;/span&gt;&lt;span class="punctuation"&gt;])]:&lt;/span&gt;
+        &lt;span class="keyword"&gt;if&lt;/span&gt; &lt;span class="punctuation"&gt;[&lt;/span&gt;&lt;span class="name"&gt;fn&lt;/span&gt; &lt;span class="keyword"&gt;for&lt;/span&gt; &lt;span class="name"&gt;name&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;fn&lt;/span&gt; &lt;span class="operator word"&gt;in&lt;/span&gt; &lt;span class="name"&gt;inspect&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;getmembers&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;member&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+               &lt;span class="keyword"&gt;if&lt;/span&gt; &lt;span class="name"&gt;name&lt;/span&gt; &lt;span class="operator word"&gt;in&lt;/span&gt; &lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="literal string"&gt;'get'&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="literal string"&gt;'post'&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="literal string"&gt;'put'&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="literal string"&gt;'delete'&lt;/span&gt;&lt;span class="punctuation"&gt;)]:&lt;/span&gt;
+            &lt;span class="keyword"&gt;print&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="literal string"&gt;&amp;quot;Adding handler &lt;/span&gt;&lt;span class="literal string interpol"&gt;%s&lt;/span&gt;&lt;span class="literal string"&gt;&amp;quot;&lt;/span&gt; &lt;span class="operator"&gt;%&lt;/span&gt; &lt;span class="name"&gt;member_name&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+            &lt;span class="name"&gt;handlers&lt;/span&gt;&lt;span class="punctuation"&gt;[&lt;/span&gt;&lt;span class="name"&gt;member_name&lt;/span&gt;&lt;span class="punctuation"&gt;]&lt;/span&gt;  &lt;span class="operator"&gt;=&lt;/span&gt; &lt;span class="name"&gt;member&lt;/span&gt;
+    &lt;span class="keyword"&gt;return&lt;/span&gt; &lt;span class="name"&gt;handlers&lt;/span&gt;
+&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Later, when we get a request, we interpret the first part of the path as resource name (although I mounted it at /api, so it becomed /api/&amp;lt;resource&amp;gt;), and then use that string to get the correct module, check for a handler for the specific method, and call it if it exists.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;pre class="code python literal-block"&gt;
+&lt;span class="keyword"&gt;def&lt;/span&gt; &lt;span class="name function"&gt;requesthandler&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;handlers&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;method&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;resource&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="operator"&gt;*&lt;/span&gt;&lt;span class="name"&gt;pathargs&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="operator"&gt;**&lt;/span&gt;&lt;span class="name"&gt;kwargs&lt;/span&gt;&lt;span class="punctuation"&gt;):&lt;/span&gt;
+    &lt;span class="literal string doc"&gt;&amp;quot;&amp;quot;&amp;quot;Main dispatch for calls to PyRest; no framework specific
+    code to be present after this point&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+
+    &lt;span class="keyword"&gt;if&lt;/span&gt; &lt;span class="operator word"&gt;not&lt;/span&gt; &lt;span class="name"&gt;resource&lt;/span&gt; &lt;span class="operator word"&gt;in&lt;/span&gt; &lt;span class="name"&gt;handlers&lt;/span&gt;&lt;span class="punctuation"&gt;:&lt;/span&gt;
+        &lt;span class="keyword"&gt;return&lt;/span&gt; &lt;span class="name"&gt;Response&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="literal string"&gt;'404 Not Found'&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="literal string"&gt;'No such resource'&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+
+    &lt;span class="keyword"&gt;if&lt;/span&gt; &lt;span class="operator word"&gt;not&lt;/span&gt;  &lt;span class="name builtin"&gt;hasattr&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;handlers&lt;/span&gt;&lt;span class="punctuation"&gt;[&lt;/span&gt;&lt;span class="name"&gt;resource&lt;/span&gt;&lt;span class="punctuation"&gt;],&lt;/span&gt; &lt;span class="name"&gt;method&lt;/span&gt;&lt;span class="punctuation"&gt;):&lt;/span&gt;
+        &lt;span class="keyword"&gt;return&lt;/span&gt; &lt;span class="name"&gt;Response&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="literal string"&gt;'405 Method Not Allowed'&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt;
+                        &lt;span class="literal string"&gt;'Unsupported method for resource'&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+
+    &lt;span class="name"&gt;return_data&lt;/span&gt; &lt;span class="operator"&gt;=&lt;/span&gt; &lt;span class="name builtin"&gt;getattr&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;handlers&lt;/span&gt;&lt;span class="punctuation"&gt;[&lt;/span&gt;&lt;span class="name"&gt;resource&lt;/span&gt;&lt;span class="punctuation"&gt;],&lt;/span&gt;
+                          &lt;span class="name"&gt;method&lt;/span&gt;&lt;span class="punctuation"&gt;)(&lt;/span&gt;&lt;span class="operator"&gt;*&lt;/span&gt;&lt;span class="name"&gt;pathargs&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="operator"&gt;**&lt;/span&gt;&lt;span class="name"&gt;kwargs&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+    &lt;span class="keyword"&gt;return&lt;/span&gt; &lt;span class="name"&gt;Response&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="literal string"&gt;'200 OK'&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;json&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;dumps&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;return_data&lt;/span&gt;&lt;span class="punctuation"&gt;))&lt;/span&gt;
+&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Right now, there's nothing exciting going on in the API, so the routing logic just calls hgapi and assumes everything will be in order:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;pre class="code python literal-block"&gt;
+&lt;span class="keyword"&gt;def&lt;/span&gt; &lt;span class="name function"&gt;get&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;ref&lt;/span&gt;&lt;span class="operator"&gt;=&lt;/span&gt;&lt;span class="name builtin pseudo"&gt;None&lt;/span&gt;&lt;span class="punctuation"&gt;):&lt;/span&gt;
+   &lt;span class="name"&gt;rev&lt;/span&gt; &lt;span class="operator"&gt;=&lt;/span&gt; &lt;span class="name"&gt;hgapi&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;Repo&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="literal string"&gt;'.'&lt;/span&gt;&lt;span class="punctuation"&gt;)[&lt;/span&gt;&lt;span class="name"&gt;ref&lt;/span&gt;&lt;span class="punctuation"&gt;]&lt;/span&gt;
+
+   &lt;span class="keyword"&gt;return&lt;/span&gt; &lt;span class="punctuation"&gt;{&lt;/span&gt;
+       &lt;span class="literal string"&gt;'node'&lt;/span&gt;&lt;span class="punctuation"&gt;:&lt;/span&gt; &lt;span class="name"&gt;rev&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;node&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt;
+       &lt;span class="literal string"&gt;'desc'&lt;/span&gt;&lt;span class="punctuation"&gt;:&lt;/span&gt; &lt;span class="name"&gt;rev&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;desc&lt;/span&gt;
+   &lt;span class="punctuation"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;So, when we GET /api/changeset/1, the requesthandler will be passed this: ({'changeset': &amp;lt;module&amp;gt;}, 'get', 'changeset', ('1',)). It will lookup 'changeset' to get the module, and then retrieve and call 'get' using getattr and pass in the '1'. changeset.get() will then call hgapi, stick it into a map, and requesthandler encodes it as json and returns it. Since none of the parts involved actually cares what the arguments are, you can just as well use /api/changeset/tip or /api/changeset/default.&lt;/p&gt;
+&lt;p&gt;As it looks now, the next part _should_ probably be adding some tests, but since I'm not totally decided on how I want to write my tests, I'll push ahead with separating the code instead - the current PyRest class and everything that has to do with CherryPy should go into a pyrest.cherrypy package or something similar, the requesthandler and get_handler functions should stay as part of pyRest proper, and the backend package should probably end up in an example package.&lt;/p&gt;
+&lt;p&gt;Code is as always available at &lt;a class="reference external" href="https://bitbucket.org/haard/pyrest"&gt;Bitbucket&lt;/a&gt;.&lt;/p&gt;
+&lt;!-- keywords: python api hgapi cherrypy rest --&gt;
+&lt;/div&gt;
+</description><category>python</category><guid isPermaLink="true">http://blaag.haard.se/pyRest-part-3--Routing-and-responsibilities</guid><pubDate>Fri, 14 Dec 2012 17:24:16 GMT</pubDate></item><item><title>pyRest part 2: Hooking the API</title><link>http://blaag.haard.se/pyRest-part-2--Hooking-the-API</link><description>&lt;div class="document" id="pyrest-part-2-hooking-the-api"&gt;
+&lt;h1 class="title"&gt;pyRest part 2: Hooking the API&lt;/h1&gt;
+&lt;p&gt;In &lt;a class="reference external" href="http://blaag.haard.se/Simple-REST-ful---ish--exposure-of-Python-APIs/"&gt;part 1&lt;/a&gt;, a very unexciting base CherryPy implementation was all we had, but now it's time to hook up something real!
+Instead of creating a mock API to work against as example code, I've decided to use &lt;a class="reference external" href="https://bitbucket.org/haard/hgapi"&gt;hgapi&lt;/a&gt; to access the pyrest repo itself as example implementation - very meta!&lt;/p&gt;
+&lt;p&gt;I've decided to hook the API in before I refactor the code to separate the web framework from pyRest, since I firmly belive in getting things working first and cleaning up after. I did create a namedtuple to hold basic response values so that the &lt;em&gt;requesthandler&lt;/em&gt; function can be extracted later.&lt;/p&gt;
+&lt;dl class="docutils"&gt;
+&lt;dt&gt;The 'interesting' part looks like this&lt;/dt&gt;
+&lt;dd&gt;&lt;pre class="code python first last literal-block"&gt;
+&lt;span class="name"&gt;Response&lt;/span&gt; &lt;span class="operator"&gt;=&lt;/span&gt; &lt;span class="name"&gt;namedtuple&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="literal string"&gt;'response'&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="literal string"&gt;'status content'&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+
+&lt;span class="keyword"&gt;def&lt;/span&gt; &lt;span class="name function"&gt;requesthandler&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;method&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="operator"&gt;*&lt;/span&gt;&lt;span class="name"&gt;pathargs&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="operator"&gt;**&lt;/span&gt;&lt;span class="name"&gt;kwargs&lt;/span&gt;&lt;span class="punctuation"&gt;):&lt;/span&gt;
+    &lt;span class="literal string doc"&gt;&amp;quot;&amp;quot;&amp;quot;Main dispatch for calls to PyRest; no framework specific
+    code to be present after this point&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+
+    &lt;span class="keyword"&gt;if&lt;/span&gt; &lt;span class="operator word"&gt;not&lt;/span&gt; &lt;span class="name"&gt;method&lt;/span&gt; &lt;span class="operator"&gt;==&lt;/span&gt; &lt;span class="literal string"&gt;'get'&lt;/span&gt;&lt;span class="punctuation"&gt;:&lt;/span&gt;
+        &lt;span class="keyword"&gt;return&lt;/span&gt; &lt;span class="name"&gt;Response&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="literal string"&gt;'500 Server Error'&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="literal string"&gt;'Not implemented'&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+
+    &lt;span class="name"&gt;repo&lt;/span&gt; &lt;span class="operator"&gt;=&lt;/span&gt; &lt;span class="name"&gt;hgapi&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;Repo&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="literal string"&gt;'.'&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+    &lt;span class="keyword"&gt;return&lt;/span&gt; &lt;span class="name"&gt;Response&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="literal string"&gt;'200 Ok'&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;repo&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;hg_id&lt;/span&gt;&lt;span class="punctuation"&gt;())&lt;/span&gt;
+&lt;/pre&gt;
+&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;p&gt;...not much yet, but it responds to any GET request with the current Mercurial node id.&lt;/p&gt;
+&lt;p&gt;My intention is that the final result will be three separate parts - a routing/domain specific part that uses hgapi, pyRest proper which handles requests and autohooks up the routing, a CherryPy part which integrates with CherryPy and will need to be reimplemented for every web framework supported.&lt;/p&gt;
+&lt;p&gt;That will be at at least one update before that though, because next will be &amp;quot;autowiring&amp;quot; the routing logic. Code for the project is available at &lt;a class="reference external" href="https://bitbucket.org/haard/pyrest"&gt;Bitbucket&lt;/a&gt;&lt;/p&gt;
+&lt;!-- keywords: python api hgapi cherrypy rest --&gt;
+&lt;/div&gt;
+</description><category>python</category><guid isPermaLink="true">http://blaag.haard.se/pyRest-part-2--Hooking-the-API</guid><pubDate>Sun, 09 Dec 2012 12:47:42 GMT</pubDate></item><item><title>Simple REST-ful (-ish) exposure of Python APIs</title><link>http://blaag.haard.se/Simple-REST-ful---ish--exposure-of-Python-APIs</link><description>&lt;div class="document" id="simple-rest-ful-ish-exposure-of-python-apis"&gt;
+&lt;h1 class="title"&gt;Simple REST-ful (-ish) exposure of Python APIs&lt;/h1&gt;
+&lt;p&gt;After having written code to expose APIs through RESTful web services a couple of times, I've decided to do it once more, only this time I won't get paid, I won't have deadlines, I'll write it so I'll never have to write it again, and I'll make it available as open source.&lt;/p&gt;
+&lt;p&gt;Problem is, I'm a lazy, lazy person, and have not been able to muster the energy to actually get writing, which leads me to this blog post - since I've not been updating the blog as I should either, I'll kill two projects with one meeting and make the actual development process open as well, as a series of blog posts and a repository at BitBucket.&lt;/p&gt;
+&lt;p&gt;For someone else to be able to follow the work, I obviously have to nail down what the goal of this exercise is:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+* Create a tool that can expose a Python API in a RESTish fashion
+* The API itself must not have to know about the tool
+* It must run on at least CherryPy and two other webapp frameworks TBD (no, not Django)
+* It must handle HTTP errors
+* It must be able to encode data into JSON before returning it
+* It must run on Python 3.2+
+* It must not care what the proper definition of RESTful is
+&lt;/pre&gt;
+&lt;p&gt;In addition, some good-to-haves:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+* It may make linking between resources easier (if feasible)
+* It may be able to use other data formats than JSON
+* It may run on Python 2.7
+&lt;/pre&gt;
+&lt;p&gt;Because I enjoy working with CherryPy since it's very good at staying out of my way, I'll start out writing for CherryPy and then generalize from there.
+Just to get started, I have created a minimal CherryPy app to work from, even though I'll split the tool from the framwork (or the REST framework from the web framework?) later. The entire code looks like &lt;a class="reference external" href="https://bitbucket.org/haard/pyrest/commits/65e2c578a85c4d81948a5f9b8cf8989a1b05a760"&gt;this&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;pre class="code python literal-block"&gt;
+&lt;span class="keyword namespace"&gt;import&lt;/span&gt; &lt;span class="name namespace"&gt;cherrypy&lt;/span&gt;
+
+&lt;span class="keyword"&gt;def&lt;/span&gt; &lt;span class="name function"&gt;requesthandler&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="operator"&gt;*&lt;/span&gt;&lt;span class="name"&gt;pathargs&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="operator"&gt;**&lt;/span&gt;&lt;span class="name"&gt;kwargs&lt;/span&gt;&lt;span class="punctuation"&gt;):&lt;/span&gt;
+    &lt;span class="name"&gt;cherrypy&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;response&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;status&lt;/span&gt; &lt;span class="operator"&gt;=&lt;/span&gt; &lt;span class="literal string"&gt;&amp;quot;500 Server Error&amp;quot;&lt;/span&gt;
+    &lt;span class="keyword"&gt;return&lt;/span&gt; &lt;span class="literal string"&gt;&amp;quot;Not implemented&amp;quot;&lt;/span&gt;
+
+
+&lt;span class="keyword"&gt;class&lt;/span&gt; &lt;span class="name class"&gt;PyRest&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name builtin"&gt;object&lt;/span&gt;&lt;span class="punctuation"&gt;):&lt;/span&gt;
+
+    &lt;span class="keyword"&gt;def&lt;/span&gt; &lt;span class="name function"&gt;index&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name builtin pseudo"&gt;self&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="operator"&gt;*&lt;/span&gt;&lt;span class="name"&gt;args&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="operator"&gt;**&lt;/span&gt;&lt;span class="name"&gt;kwargs&lt;/span&gt;&lt;span class="punctuation"&gt;):&lt;/span&gt;
+        &lt;span class="keyword"&gt;return&lt;/span&gt; &lt;span class="name"&gt;requesthandler&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="operator"&gt;*&lt;/span&gt;&lt;span class="name"&gt;args&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="operator"&gt;**&lt;/span&gt;&lt;span class="name"&gt;kwargs&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+    &lt;span class="name"&gt;index&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;exposed&lt;/span&gt; &lt;span class="operator"&gt;=&lt;/span&gt; &lt;span class="name builtin pseudo"&gt;True&lt;/span&gt;
+
+
+&lt;span class="name"&gt;CONF&lt;/span&gt; &lt;span class="operator"&gt;=&lt;/span&gt; &lt;span class="punctuation"&gt;{&lt;/span&gt;
+    &lt;span class="literal string"&gt;'global'&lt;/span&gt;&lt;span class="punctuation"&gt;:&lt;/span&gt; &lt;span class="punctuation"&gt;{&lt;/span&gt;
+        &lt;span class="literal string"&gt;'server.socket_host'&lt;/span&gt;&lt;span class="punctuation"&gt;:&lt;/span&gt; &lt;span class="literal string"&gt;'0.0.0.0'&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt;
+        &lt;span class="literal string"&gt;'server.socket_port'&lt;/span&gt;&lt;span class="punctuation"&gt;:&lt;/span&gt; &lt;span class="literal number integer"&gt;8888&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt;
+    &lt;span class="punctuation"&gt;}&lt;/span&gt;
+&lt;span class="punctuation"&gt;}&lt;/span&gt;
+
+
+&lt;span class="keyword"&gt;if&lt;/span&gt; &lt;span class="name"&gt;__name__&lt;/span&gt; &lt;span class="operator"&gt;==&lt;/span&gt; &lt;span class="literal string"&gt;'__main__'&lt;/span&gt;&lt;span class="punctuation"&gt;:&lt;/span&gt;
+    &lt;span class="name"&gt;ROOT&lt;/span&gt; &lt;span class="operator"&gt;=&lt;/span&gt; &lt;span class="name"&gt;PyRest&lt;/span&gt;&lt;span class="punctuation"&gt;()&lt;/span&gt;
+    &lt;span class="name"&gt;cherrypy&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;quickstart&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;ROOT&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="literal string"&gt;'/'&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;CONF&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+
+&lt;span class="keyword"&gt;def&lt;/span&gt; &lt;span class="name function"&gt;application&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;environ&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;start_response&lt;/span&gt;&lt;span class="punctuation"&gt;):&lt;/span&gt;
+  &lt;span class="name"&gt;cherrypy&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;tree&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;mount&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;PyRest&lt;/span&gt;&lt;span class="punctuation"&gt;(),&lt;/span&gt; &lt;span class="literal string"&gt;'/'&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name builtin pseudo"&gt;None&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+  &lt;span class="keyword"&gt;return&lt;/span&gt; &lt;span class="name"&gt;cherrypy&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;tree&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;environ&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;start_response&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;!-- keywords: python rest http cherrypy tornado twisted --&gt;
+&lt;/div&gt;
+</description><category>python</category><guid isPermaLink="true">http://blaag.haard.se/Simple-REST-ful---ish--exposure-of-Python-APIs</guid><pubDate>Thu, 06 Dec 2012 20:25:04 GMT</pubDate></item><item><title>Sending non-valid names as arguments</title><link>http://blaag.haard.se/Sending-non-valid-names-as-arguments</link><description>&lt;div class="document" id="sending-non-valid-names-as-arguments"&gt;
+&lt;h1 class="title"&gt;Sending non-valid names as arguments&lt;/h1&gt;
+&lt;p&gt;I got a &lt;a class="reference external" href="https://bitbucket.org/haard/hgapi/issue/14/hg_log-cannot-filter-by-branch"&gt;feature request&lt;/a&gt;  on &lt;a class="reference external" href="https://bitbucket.org/haard/hgapi"&gt;hgapi&lt;/a&gt; the other day, pointing out that it was not possible to filter
+the Mercurial log using the API, since there is no dedicated way to do it and the fallback method - sending
+keyword arguments that will be passed to the command line - does not work. The signature of the method in
+question is&lt;/p&gt;
+&lt;pre class="code python literal-block"&gt;
+&lt;span class="keyword"&gt;def&lt;/span&gt; &lt;span class="name function"&gt;hg_log&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name builtin pseudo"&gt;self&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;identifier&lt;/span&gt;&lt;span class="operator"&gt;=&lt;/span&gt;&lt;span class="name builtin pseudo"&gt;None&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;limit&lt;/span&gt;&lt;span class="operator"&gt;=&lt;/span&gt;&lt;span class="name builtin pseudo"&gt;None&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt;
+           &lt;span class="name"&gt;template&lt;/span&gt;&lt;span class="operator"&gt;=&lt;/span&gt;&lt;span class="name builtin pseudo"&gt;None&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;branch&lt;/span&gt;&lt;span class="operator"&gt;=&lt;/span&gt;&lt;span class="name builtin pseudo"&gt;None&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="operator"&gt;**&lt;/span&gt;&lt;span class="name"&gt;kwargs&lt;/span&gt;&lt;span class="punctuation"&gt;):&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;with kwargs accepting any keyword arguments and passing them to the command line. So, for getting
+a log by branch, trying&lt;/p&gt;
+&lt;pre class="code python literal-block"&gt;
+&lt;span class="name"&gt;repo&lt;/span&gt;&lt;span class="operator"&gt;.&lt;/span&gt;&lt;span class="name"&gt;hg_log&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="operator"&gt;-&lt;/span&gt;&lt;span class="name"&gt;b&lt;/span&gt;&lt;span class="operator"&gt;=&lt;/span&gt;&lt;span class="name"&gt;mybranch&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;seems like a good idea, until you realize that '-b' is not a valid identifier, and so this code is
+invalid. However, almost &lt;em&gt;all&lt;/em&gt; Mercurial options you might want to send like this starts with a dash,
+so what is the point of using kwargs at all?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Notice: Entering bad practice land!&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;It is totally possible to send keyword arguments to a function in Python that are not valid identifiers,
+by using argument unpacking. Given a function like this:&lt;/p&gt;
+&lt;pre class="code python literal-block"&gt;
+&lt;span class="operator"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="keyword"&gt;def&lt;/span&gt; &lt;span class="name function"&gt;myfunc&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;positional&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;kwarg&lt;/span&gt;&lt;span class="operator"&gt;=&lt;/span&gt;&lt;span class="literal string"&gt;'Hello'&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="operator"&gt;**&lt;/span&gt;&lt;span class="name"&gt;kwargs&lt;/span&gt;&lt;span class="punctuation"&gt;):&lt;/span&gt;
+&lt;span class="operator"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;     &lt;span class="keyword"&gt;print&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;positional&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+&lt;span class="operator"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;     &lt;span class="keyword"&gt;print&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;kwarg&lt;/span&gt;&lt;span class="punctuation"&gt;)&lt;/span&gt;
+&lt;span class="operator"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;     &lt;span class="keyword"&gt;for&lt;/span&gt; &lt;span class="name"&gt;key&lt;/span&gt; &lt;span class="operator word"&gt;in&lt;/span&gt; &lt;span class="name"&gt;kwargs&lt;/span&gt;&lt;span class="punctuation"&gt;:&lt;/span&gt;
+&lt;span class="operator"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;         &lt;span class="keyword"&gt;print&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="literal string"&gt;&amp;quot;&lt;/span&gt;&lt;span class="literal string interpol"&gt;%s&lt;/span&gt;&lt;span class="literal string"&gt;: &lt;/span&gt;&lt;span class="literal string interpol"&gt;%s&lt;/span&gt;&lt;span class="literal string"&gt;&amp;quot;&lt;/span&gt; &lt;span class="operator"&gt;%&lt;/span&gt; &lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="name"&gt;key&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="name"&gt;kwargs&lt;/span&gt;&lt;span class="punctuation"&gt;[&lt;/span&gt;&lt;span class="name"&gt;key&lt;/span&gt;&lt;span class="punctuation"&gt;]))&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;you can send any dict in like this:&lt;/p&gt;
+&lt;pre class="code python literal-block"&gt;
+&lt;span class="operator"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="name"&gt;myfunc&lt;/span&gt;&lt;span class="punctuation"&gt;(&lt;/span&gt;&lt;span class="literal number integer"&gt;1&lt;/span&gt;&lt;span class="punctuation"&gt;,&lt;/span&gt; &lt;span class="operator"&gt;**&lt;/span&gt;&lt;span class="punctuation"&gt;{&lt;/span&gt;&lt;span class="literal string"&gt;'-1-'&lt;/span&gt;&lt;span class="punctuation"&gt;:&lt;/span&gt; &lt;span class="literal string"&gt;'dash-one-dash'&lt;/span&gt;&lt;span class="punctuation"&gt;})&lt;/span&gt;
+&lt;span class="literal number integer"&gt;1&lt;/span&gt;
+&lt;span class="name"&gt;Hello&lt;/span&gt;
+&lt;span class="operator"&gt;-&lt;/span&gt;&lt;span class="literal number integer"&gt;1&lt;/span&gt;&lt;span class="operator"&gt;-&lt;/span&gt;&lt;span class="punctuation"&gt;:&lt;/span&gt; &lt;span class="name"&gt;dash&lt;/span&gt;&lt;span class="operator"&gt;-&lt;/span&gt;&lt;span class="name"&gt;one&lt;/span&gt;&lt;span class="operator"&gt;-&lt;/span&gt;&lt;span class="name"&gt;dash&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;Not a very nice way of doing things, but can be handy in - for example - a fallback case where you,
+want to support future arguments, obscure arguments, and generally just anything.&lt;/p&gt;
+&lt;dl class="docutils"&gt;
+&lt;dt&gt;(hgapi 1.3.1a3 was just uploaded to the cheeseshop; hg_log now takes a 'branch' argument)&lt;/dt&gt;
+&lt;dd&gt;&lt;!-- keywords: mercurial python hg hgapi --&gt;
+&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;/div&gt;
+</description><category>python</category><guid isPermaLink="true">http://blaag.haard.se/Sending-non-valid-names-as-arguments</guid><pubDate>Fri, 02 Nov 2012 17:29:17 GMT</pubDate></item></channel></rss>

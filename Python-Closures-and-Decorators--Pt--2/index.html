@@ -1,0 +1,313 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <title>Python Closures and Decorators (Pt. 2)</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" type="text/css" href="/haze.css?1396595441"><link rel="stylesheet" type="text/css" href="/pygments.css?1396595441">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="description" content="Python Closures and Decorators (Pt. 2)">
+  <meta name="author" content="Fredrik Håård">
+</head>
+<body>
+    <section class="page">
+      <header class="page">
+        <h1>Fredrik Håård's Blaag</h1>
+      </header>
+      <div class="blurbs">
+        <span>
+<a class="menu_link centered" href="http://twitter.com/fhaard">@fhaard</a>
+<div class="fineprint box blurb">
+I'm a programmer, consultant, developer, occasional teacher and
+speaker. Among my least disliked programming languages are Python, and
+a majority of these posts are related to Python in one way or another.
+</div>
+<div class="blurb">
+    <a href="https://flattr.com/submit/auto?user_id=fhaard&url=http://blaag.haard.se&title=Python%20Blaag&language=en_GB&tags=python,blog,programming&category=text">
+        <img src="https://api.flattr.com/button/flattr-badge-large.png"
+        alt="Flattr this blog" />
+    </a>
+</div>
+<div class='blurb'>
+	<a href='http://www.metallapan.se'>
+		<img src='http://metallapan.se/img/metallapan_small_black.png' style='position:relative; left: -15px'/>
+	</a>
+</div>
+        </span>
+        <a href="/rss.xml" class="menu_link centered">RSS Feed</a>
+      </div>
+      <div class="blog">
+        <article id="Python-Closures-and-Decorators--Pt--2" class="blog box">
+          <div class="document" id="Python-Closures-and-Decorators--Pt--2">
+            <div class="document" id="python-closures-and-decorators-pt-2">
+<h1 class="title">Python Closures and Decorators (Pt. 2)</h1>
+<p>Edit: got complaints that code was hard to read, trying out <a class="reference external" href="http://pygments.org/">Pygments</a>.</p>
+<p>In <a class="reference external" href="/Python-Closures-and-Decorators--Pt--1">part 1</a>, we looked at sending functions as arguments to other
+functions, at nesting functinons, and finally we wrapped a function in
+another function. We'll begin this part by giving an example
+implementation on the exercise I gave in <a class="reference external" href="/Python-Closures-and-Decorators--Pt--1">part 1</a>:</p>
+<blockquote>
+<pre class="code python literal-block">
+<span class="operator">&gt;&gt;&gt;</span> <span class="keyword">def</span> <span class="name function">print_call</span><span class="punctuation">(</span><span class="name">fn</span><span class="punctuation">):</span>
+<span class="operator">...</span>   <span class="keyword">def</span> <span class="name function">fn_wrap</span><span class="punctuation">(</span><span class="operator">*</span><span class="name">args</span><span class="punctuation">,</span> <span class="operator">**</span><span class="name">kwargs</span><span class="punctuation">):</span>
+<span class="operator">...</span>     <span class="keyword">print</span><span class="punctuation">(</span><span class="literal string">&quot;Calling </span><span class="literal string interpol">%s</span><span class="literal string"> with arguments: </span><span class="literal string escape">\n\t</span><span class="literal string">args: </span><span class="literal string interpol">%s</span><span class="literal string escape">\n\t</span><span class="literal string">kwargs:</span><span class="literal string interpol">%s</span><span class="literal string">&quot;</span> <span class="operator">%</span> <span class="punctuation">(</span>
+<span class="operator">...</span>            <span class="name">fn</span><span class="operator">.</span><span class="name">__name__</span><span class="punctuation">,</span> <span class="name">args</span><span class="punctuation">,</span> <span class="name">kwargs</span><span class="punctuation">))</span>
+<span class="operator">...</span>     <span class="name">retval</span> <span class="operator">=</span> <span class="name">fn</span><span class="punctuation">(</span><span class="operator">*</span><span class="name">args</span><span class="punctuation">,</span> <span class="operator">**</span><span class="name">kwargs</span><span class="punctuation">)</span>
+<span class="operator">...</span>     <span class="keyword">print</span><span class="punctuation">(</span><span class="literal string">&quot;</span><span class="literal string interpol">%s</span><span class="literal string"> returning '</span><span class="literal string interpol">%s</span><span class="literal string">'&quot;</span> <span class="operator">%</span> <span class="punctuation">(</span><span class="name">fn</span><span class="operator">.</span><span class="name">func_name</span><span class="punctuation">,</span> <span class="name">retval</span><span class="punctuation">))</span>
+<span class="operator">...</span>     <span class="keyword">return</span> <span class="name">retval</span>
+<span class="operator">...</span>   <span class="name">fn_wrap</span><span class="operator">.</span><span class="name">func_name</span> <span class="operator">=</span> <span class="name">fn</span><span class="operator">.</span><span class="name">func_name</span>
+<span class="operator">...</span>   <span class="keyword">return</span> <span class="name">fn_wrap</span>
+<span class="operator">...</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="keyword">def</span> <span class="name function">greeter</span><span class="punctuation">(</span><span class="name">greeting</span><span class="punctuation">,</span> <span class="name">what</span><span class="operator">=</span><span class="literal string">'world'</span><span class="punctuation">):</span>
+<span class="operator">...</span>     <span class="keyword">return</span> <span class="literal string">&quot;</span><span class="literal string interpol">%s</span><span class="literal string"> </span><span class="literal string interpol">%s</span><span class="literal string">!&quot;</span> <span class="operator">%</span> <span class="punctuation">(</span><span class="name">greeting</span><span class="punctuation">,</span> <span class="name">what</span><span class="punctuation">)</span>
+<span class="operator">...</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">greeter</span> <span class="operator">=</span> <span class="name">print_call</span><span class="punctuation">(</span><span class="name">greeter</span><span class="punctuation">)</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">greeter</span><span class="punctuation">(</span><span class="literal string">&quot;Hi&quot;</span><span class="punctuation">)</span>
+<span class="name">Calling</span> <span class="name">greeter</span> <span class="keyword">with</span> <span class="name">arguments</span><span class="punctuation">:</span>
+     <span class="name">args</span><span class="punctuation">:</span> <span class="punctuation">(</span><span class="literal string">'Hi'</span><span class="punctuation">,)</span>
+     <span class="name">kwargs</span><span class="punctuation">:{}</span>
+<span class="name">greeter</span> <span class="name">returning</span> <span class="literal string">'Hi world!'</span>
+<span class="literal string">'Hi world!'</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">greeter</span><span class="punctuation">(</span><span class="literal string">&quot;Hi&quot;</span><span class="punctuation">,</span> <span class="name">what</span><span class="operator">=</span><span class="literal string">&quot;Python&quot;</span><span class="punctuation">)</span>
+<span class="name">Calling</span> <span class="name">greeter</span> <span class="keyword">with</span> <span class="name">arguments</span><span class="punctuation">:</span>
+     <span class="name">args</span><span class="punctuation">:</span> <span class="punctuation">(</span><span class="literal string">'Hi'</span><span class="punctuation">,)</span>
+     <span class="name">kwargs</span><span class="punctuation">:{</span><span class="literal string">'what'</span><span class="punctuation">:</span> <span class="literal string">'Python'</span><span class="punctuation">}</span>
+<span class="name">greeter</span> <span class="name">returning</span> <span class="literal string">'Hi Python!'</span>
+<span class="literal string">'Hi Python!'</span>
+<span class="operator">&gt;&gt;&gt;</span>
+</pre>
+</blockquote>
+<p>So, this is at least mildly useful, but it'll get better! You may or
+may not have heard of <em>closures</em>, and you may have heard any of a
+large number of defenitions of what a closure is - I won't go into
+nitpicking, but just say that a closure is a block of code (for
+example a function) that captures (or <em>closes over</em>) non-local (free)
+variables. If this is all gibberish to you, you're probably in need of
+a CS refresher, but fear not - I'll show by example, and the concept
+is easy enough to understand: a function can reference variables that
+are defined in the function's enclosing scope.</p>
+<p>For example, take a look at this code:</p>
+<blockquote>
+<pre class="code python literal-block">
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">a</span> <span class="operator">=</span> <span class="literal number integer">0</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="keyword">def</span> <span class="name function">get_a</span><span class="punctuation">():</span>
+<span class="operator">...</span>   <span class="keyword">return</span> <span class="name">a</span>
+<span class="operator">...</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">get_a</span><span class="punctuation">()</span>
+<span class="literal number integer">0</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">a</span> <span class="operator">=</span> <span class="literal number integer">3</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">get_a</span><span class="punctuation">()</span>
+<span class="literal number integer">3</span>
+</pre>
+</blockquote>
+<p>As you can see, the function <tt class="docutils literal">get_a</tt> can get the value of <tt class="docutils literal">a</tt>, and
+will be able to read the updated value. However, there is a
+limitation - a captured variable cannot be written to:</p>
+<blockquote>
+<pre class="code python literal-block">
+<span class="operator">&gt;&gt;&gt;</span> <span class="keyword">def</span> <span class="name function">set_a</span><span class="punctuation">(</span><span class="name">val</span><span class="punctuation">):</span>
+<span class="operator">...</span>   <span class="name">a</span> <span class="operator">=</span> <span class="name">val</span>
+<span class="operator">...</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">set_a</span><span class="punctuation">(</span><span class="literal number integer">4</span><span class="punctuation">)</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">a</span>
+<span class="literal number integer">3</span>
+</pre>
+</blockquote>
+<p>What happened here? Since a closure cannot write to any captured
+variables, <tt class="docutils literal">a = val</tt> actually writes to a local variable a that
+shadows the module-level <tt class="docutils literal">a</tt> that we wanted to write to. To get
+around this limitation (which may or may not be a good idea), we can
+use a container type:</p>
+<blockquote>
+<pre class="code python literal-block">
+<span class="operator">&gt;&gt;&gt;</span> <span class="keyword">class</span> <span class="name class">A</span><span class="punctuation">(</span><span class="name builtin">object</span><span class="punctuation">):</span> <span class="keyword">pass</span>
+<span class="operator">...</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">a</span> <span class="operator">=</span> <span class="name">A</span><span class="punctuation">()</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">a</span><span class="operator">.</span><span class="name">value</span> <span class="operator">=</span> <span class="literal number integer">1</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="keyword">def</span> <span class="name function">set_a</span><span class="punctuation">(</span><span class="name">val</span><span class="punctuation">):</span>
+<span class="operator">...</span>   <span class="name">a</span><span class="operator">.</span><span class="name">value</span> <span class="operator">=</span> <span class="name">val</span>
+<span class="operator">...</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">a</span><span class="operator">.</span><span class="name">value</span>
+<span class="literal number integer">1</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">set_a</span><span class="punctuation">(</span><span class="literal number integer">5</span><span class="punctuation">)</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">a</span><span class="operator">.</span><span class="name">value</span>
+<span class="literal number integer">5</span>
+</pre>
+</blockquote>
+<p>So, with the knowledge that a function captures variables from it's
+enclosing scope, we're finally approaching something interesting, and
+we'll start by implementing a <em>partial</em>. A partial is an instance of
+a function where you have already filled in some or all of the
+arguments; let's say, for example that you have a session with
+username and password stored, and a function that queries some
+backend layer which takes different arguments but <em>always</em> require
+credentials. Instead of passing the credentials manually every time,
+we can use a partial to pre-fill those values:</p>
+<blockquote>
+<pre class="code python literal-block">
+<span class="operator">&gt;&gt;&gt;</span> <span class="comment">#Our 'backend' function</span>
+<span class="operator">...</span> <span class="keyword">def</span> <span class="name function">get_stuff</span><span class="punctuation">(</span><span class="name">user</span><span class="punctuation">,</span> <span class="name">pw</span><span class="punctuation">,</span> <span class="name">stuff_id</span><span class="punctuation">):</span>
+<span class="operator">...</span>   <span class="literal string">&quot;&quot;&quot;Here we would presumably fetch data using the supplied
+...   credentials and id&quot;&quot;&quot;</span>
+<span class="operator">...</span>   <span class="keyword">print</span><span class="punctuation">(</span><span class="literal string">&quot;get_stuff called with user: </span><span class="literal string interpol">%s</span><span class="literal string">, pw: </span><span class="literal string interpol">%s</span><span class="literal string">, stuff_id: </span><span class="literal string interpol">%s</span><span class="literal string">&quot;</span> <span class="operator">%</span> <span class="punctuation">(</span>
+<span class="operator">...</span>         <span class="name">user</span><span class="punctuation">,</span> <span class="name">pw</span><span class="punctuation">,</span> <span class="name">stuff_id</span><span class="punctuation">))</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="keyword">def</span> <span class="name function">partial</span><span class="punctuation">(</span><span class="name">fn</span><span class="punctuation">,</span> <span class="operator">*</span><span class="name">args</span><span class="punctuation">,</span> <span class="operator">**</span><span class="name">kwargs</span><span class="punctuation">):</span>
+<span class="operator">...</span>   <span class="keyword">def</span> <span class="name function">fn_part</span><span class="punctuation">(</span><span class="operator">*</span><span class="name">fn_args</span><span class="punctuation">,</span> <span class="operator">**</span><span class="name">fn_kwargs</span><span class="punctuation">):</span>
+<span class="operator">...</span>     <span class="name">kwargs</span><span class="operator">.</span><span class="name">update</span><span class="punctuation">(</span><span class="name">fn_kwargs</span><span class="punctuation">)</span>
+<span class="operator">...</span>     <span class="keyword">return</span> <span class="name">fn</span><span class="punctuation">(</span><span class="operator">*</span><span class="name">args</span> <span class="operator">+</span> <span class="name">fn_args</span><span class="punctuation">,</span> <span class="operator">**</span><span class="name">kwargs</span><span class="punctuation">)</span>
+<span class="operator">...</span>   <span class="keyword">return</span> <span class="name">fn_part</span>
+<span class="operator">...</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">my_stuff</span> <span class="operator">=</span> <span class="name">partial</span><span class="punctuation">(</span><span class="name">get_stuff</span><span class="punctuation">,</span> <span class="literal string">'myuser'</span><span class="punctuation">,</span> <span class="literal string">'mypwd'</span><span class="punctuation">)</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">my_stuff</span><span class="punctuation">(</span><span class="literal number integer">3</span><span class="punctuation">)</span>
+<span class="name">get_stuff</span> <span class="name">called</span> <span class="keyword">with</span> <span class="name">user</span><span class="punctuation">:</span> <span class="name">myuser</span><span class="punctuation">,</span> <span class="name">pw</span><span class="punctuation">:</span> <span class="name">mypwd</span><span class="punctuation">,</span> <span class="name">stuff_id</span><span class="punctuation">:</span> <span class="literal number integer">3</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">my_stuff</span><span class="punctuation">(</span><span class="literal number integer">67</span><span class="punctuation">)</span>
+<span class="name">get_stuff</span> <span class="name">called</span> <span class="keyword">with</span> <span class="name">user</span><span class="punctuation">:</span> <span class="name">myuser</span><span class="punctuation">,</span> <span class="name">pw</span><span class="punctuation">:</span> <span class="name">mypwd</span><span class="punctuation">,</span> <span class="name">stuff_id</span><span class="punctuation">:</span> <span class="literal number integer">67</span>
+</pre>
+</blockquote>
+<p>Partials can be used in numerous places to remove code duplication
+where a function is called in different places with the same, or
+almost the same, arguments. Of course, you don't <em>have</em> to implement it
+yourself; just do <tt class="docutils literal">from functools import partial</tt>.</p>
+<p>Finally, we'll take a look at function decorators (there may be a post
+on class decorators in the future). A function decorator is (<em>can be
+implemented as</em>) a function that takes a function as parameter and
+returns a new function. Sounds familiar? It should, because we've
+already implemented a working decorator: our <tt class="docutils literal">print_call</tt> function
+is ready to be used as-is:</p>
+<blockquote>
+<pre class="code python literal-block">
+<span class="operator">&gt;&gt;&gt;</span> <span class="name decorator">&#64;print_call</span>
+<span class="operator">...</span> <span class="keyword">def</span> <span class="name function">will_be_logged</span><span class="punctuation">(</span><span class="name">arg</span><span class="punctuation">):</span>
+<span class="operator">...</span>   <span class="keyword">return</span> <span class="name">arg</span><span class="operator">*</span><span class="literal number integer">5</span>
+<span class="operator">...</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">will_be_logged</span><span class="punctuation">(</span><span class="literal string">&quot;!&quot;</span><span class="punctuation">)</span>
+<span class="name">Calling</span> <span class="name">will_be_logged</span> <span class="keyword">with</span> <span class="name">arguments</span><span class="punctuation">:</span>
+     <span class="name">args</span><span class="punctuation">:</span> <span class="punctuation">(</span><span class="literal string">'!'</span><span class="punctuation">,)</span>
+     <span class="name">kwargs</span><span class="punctuation">:{}</span>
+<span class="name">will_be_logged</span> <span class="name">returning</span> <span class="literal string">'!!!!!'</span>
+<span class="literal string">'!!!!!'</span>
+</pre>
+</blockquote>
+<p>Using the &#64;-notation is simply a convenient shorthand to doing:</p>
+<blockquote>
+<pre class="code python literal-block">
+<span class="operator">&gt;&gt;&gt;</span> <span class="keyword">def</span> <span class="name function">will_be_logged</span><span class="punctuation">(</span><span class="name">arg</span><span class="punctuation">):</span>
+<span class="operator">...</span>   <span class="keyword">return</span> <span class="name">arg</span><span class="operator">*</span><span class="literal number integer">5</span>
+<span class="operator">...</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">will_be_logged</span> <span class="operator">=</span> <span class="name">print_call</span><span class="punctuation">(</span><span class="name">will_be_logged</span><span class="punctuation">)</span>
+</pre>
+</blockquote>
+<p>But what if we want to be able to parameterize the decorator? In this
+case, the function used as a decorator will received the arguments,
+and will be expected to return a function that wraps
+the decorated function:</p>
+<blockquote>
+<pre class="code python literal-block">
+<span class="operator">&gt;&gt;&gt;</span> <span class="keyword">def</span> <span class="name function">require</span><span class="punctuation">(</span><span class="name">role</span><span class="punctuation">):</span>
+<span class="operator">...</span>   <span class="keyword">def</span> <span class="name function">wrapper</span><span class="punctuation">(</span><span class="name">fn</span><span class="punctuation">):</span>
+<span class="operator">...</span>     <span class="keyword">def</span> <span class="name function">new_fn</span><span class="punctuation">(</span><span class="operator">*</span><span class="name">args</span><span class="punctuation">,</span> <span class="operator">**</span><span class="name">kwargs</span><span class="punctuation">):</span>
+<span class="operator">...</span>       <span class="keyword">if</span> <span class="operator word">not</span> <span class="name">role</span> <span class="operator word">in</span> <span class="name">kwargs</span><span class="operator">.</span><span class="name">get</span><span class="punctuation">(</span><span class="literal string">'roles'</span><span class="punctuation">,</span> <span class="punctuation">[]):</span>
+<span class="operator">...</span>         <span class="keyword">print</span><span class="punctuation">(</span><span class="literal string">&quot;</span><span class="literal string interpol">%s</span><span class="literal string"> not in </span><span class="literal string interpol">%s</span><span class="literal string">&quot;</span> <span class="operator">%</span> <span class="punctuation">(</span><span class="name">role</span><span class="punctuation">,</span> <span class="name">kwargs</span><span class="operator">.</span><span class="name">get</span><span class="punctuation">(</span><span class="literal string">'roles'</span><span class="punctuation">,</span> <span class="punctuation">[])))</span>
+<span class="operator">...</span>         <span class="keyword">raise</span> <span class="name exception">Exception</span><span class="punctuation">(</span><span class="literal string">&quot;Unauthorized&quot;</span><span class="punctuation">)</span>
+<span class="operator">...</span>       <span class="keyword">return</span> <span class="name">fn</span><span class="punctuation">(</span><span class="operator">*</span><span class="name">args</span><span class="punctuation">,</span> <span class="operator">**</span><span class="name">kwargs</span><span class="punctuation">)</span>
+<span class="operator">...</span>     <span class="keyword">return</span> <span class="name">new_fn</span>
+<span class="operator">...</span>   <span class="keyword">return</span> <span class="name">wrapper</span>
+<span class="operator">...</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name decorator">&#64;require</span><span class="punctuation">(</span><span class="literal string">'admin'</span><span class="punctuation">)</span>
+<span class="operator">...</span> <span class="keyword">def</span> <span class="name function">get_users</span><span class="punctuation">(</span><span class="operator">**</span><span class="name">kwargs</span><span class="punctuation">):</span>
+<span class="operator">...</span>   <span class="keyword">return</span> <span class="punctuation">(</span><span class="literal string">'Alice'</span><span class="punctuation">,</span> <span class="literal string">'Bob'</span><span class="punctuation">)</span>
+<span class="operator">...</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">get_users</span><span class="punctuation">()</span>
+<span class="name">admin</span> <span class="operator word">not</span> <span class="operator word">in</span> <span class="punctuation">[]</span>
+<span class="name">Traceback</span> <span class="punctuation">(</span><span class="name">most</span> <span class="name">recent</span> <span class="name">call</span> <span class="name">last</span><span class="punctuation">):</span>
+  <span class="name">File</span> <span class="literal string">&quot;&lt;stdin&gt;&quot;</span><span class="punctuation">,</span> <span class="name">line</span> <span class="literal number integer">1</span><span class="punctuation">,</span> <span class="operator word">in</span> <span class="operator">&lt;</span><span class="name">module</span><span class="operator">&gt;</span>
+  <span class="name">File</span> <span class="literal string">&quot;&lt;stdin&gt;&quot;</span><span class="punctuation">,</span> <span class="name">line</span> <span class="literal number integer">7</span><span class="punctuation">,</span> <span class="operator word">in</span> <span class="name">new_fn</span>
+<span class="name exception">Exception</span><span class="punctuation">:</span> <span class="name">Unauthorized</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">get_users</span><span class="punctuation">(</span><span class="name">roles</span><span class="operator">=</span><span class="punctuation">[</span><span class="literal string">'user'</span><span class="punctuation">,</span> <span class="literal string">'editor'</span><span class="punctuation">])</span>
+<span class="name">admin</span> <span class="operator word">not</span> <span class="operator word">in</span> <span class="punctuation">[</span><span class="literal string">'user'</span><span class="punctuation">,</span> <span class="literal string">'editor'</span><span class="punctuation">]</span>
+<span class="name">Traceback</span> <span class="punctuation">(</span><span class="name">most</span> <span class="name">recent</span> <span class="name">call</span> <span class="name">last</span><span class="punctuation">):</span>
+  <span class="name">File</span> <span class="literal string">&quot;&lt;stdin&gt;&quot;</span><span class="punctuation">,</span> <span class="name">line</span> <span class="literal number integer">1</span><span class="punctuation">,</span> <span class="operator word">in</span> <span class="operator">&lt;</span><span class="name">module</span><span class="operator">&gt;</span>
+  <span class="name">File</span> <span class="literal string">&quot;&lt;stdin&gt;&quot;</span><span class="punctuation">,</span> <span class="name">line</span> <span class="literal number integer">7</span><span class="punctuation">,</span> <span class="operator word">in</span> <span class="name">new_fn</span>
+<span class="name exception">Exception</span><span class="punctuation">:</span> <span class="name">Unauthorized</span>
+<span class="operator">&gt;&gt;&gt;</span> <span class="name">get_users</span><span class="punctuation">(</span><span class="name">roles</span><span class="operator">=</span><span class="punctuation">[</span><span class="literal string">'user'</span><span class="punctuation">,</span> <span class="literal string">'admin'</span><span class="punctuation">])</span>
+<span class="punctuation">(</span><span class="literal string">'Alice'</span><span class="punctuation">,</span> <span class="literal string">'Bob'</span><span class="punctuation">)</span>
+</pre>
+</blockquote>
+<p>...and there you have it. You are now ready to write decorators, and
+perhaps use them to write aspect-oriented Python; adding &#64;cache,
+&#64;trace, &#64;throttle are all trivial (and before you add &#64;cache, do check
+functools once more if you're using Python 3!).</p>
+<blockquote>
+</blockquote>
+</div>
+          </div>
+          <div class="timestamp">
+            Blaag created 120301 19:04
+          </div>
+          <div class="fullcomments">
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+              /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+              var disqus_shortname = 'devrantblaag';
+              var disqus_identifier = 'Python-Closures-and-Decorators--Pt--2';
+              /* * * DON'T EDIT BELOW THIS LINE * * */
+              (function(d) {
+              var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+            <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+          </div>
+        </article>
+        <footer class="page">
+          <p class="fineprint"><script type="text/javascript"><!--
+google_ad_client = "ca-pub-8024096273645887";
+/* Blaag-footer-smaller */
+google_ad_slot = "2686503142";
+google_ad_width = 468;
+google_ad_height = 60;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<br/>
+
+Page created using <a
+href='https://bitbucket.org/haard/blaag'>blaag</a> 
+and abusing <a href='http://docutils.sourceforge.net'>docutils</a>.
+<a href='/rss.xml'>RSS Feed</a> generated using <a
+href='http://www.dalkescientific.com/Python/PyRSS2Gen.html'>PyRSS2Gen</a>.
+</p>
+        </footer>
+</div>
+      <nav class="blogs">
+        <a href="/" class="menu_link">- index -</a>
+        <h4>My recent posts</h4>
+        <a href="http://blaag.haard.se/Call-for-Proposals--PyCon-Sweden-2014" class="menu_link">Call for Proposals: PyCon Sweden 2014!</a><a href="http://blaag.haard.se/Basic-Python-course-in-Karlskona" class="menu_link">Basic Python course in Karlskona</a><a href="http://blaag.haard.se/Embedding-Jython-in-Java-Applications" class="menu_link">Embedding Jython in Java Applications</a><a href="http://blaag.haard.se/I-accidentally-the-server" class="menu_link">I accidentally the server</a><a href="http://blaag.haard.se/BitSynchHub-now-supports-git--gitapi-released--new-hgapi-version" class="menu_link">BitSynchHub now supports git, gitapi released, new hgapi version</a><a href="http://blaag.haard.se/Synchronize-Bitbucket-to-Github-automatically" class="menu_link">Synchronize Bitbucket to Github automatically</a><a href="http://blaag.haard.se/See-you-in-Florence-this-summer" class="menu_link">See you in Florence this summer?</a><a href="http://blaag.haard.se/Batteries-included--Download--unzip-and-parse-in-13-lines" class="menu_link">Batteries included: Download, unzip and parse in 13 lines</a><a href="http://blaag.haard.se/WGS-84-distance-calculations-at-the-speed-of-C" class="menu_link">WGS-84 distance calculations at the speed of C</a><a href="http://blaag.haard.se/pyRest-part-5--You-can-actually-use-this" class="menu_link">pyRest part 5: You can actually use this</a><a href="http://blaag.haard.se/pyRest-part-4--Separating-the-parts" class="menu_link">pyRest part 4: Separating the parts</a><a href="http://blaag.haard.se/pyRest-part-3--Routing-and-responsibilities" class="menu_link">pyRest part 3: Routing and responsibilities</a><a href="http://blaag.haard.se/pyRest-part-2--Hooking-the-API" class="menu_link">pyRest part 2: Hooking the API</a><a href="http://blaag.haard.se/Simple-REST-ful---ish--exposure-of-Python-APIs" class="menu_link">Simple REST-ful (-ish) exposure of Python APIs</a><a href="http://blaag.haard.se/Sending-non-valid-names-as-arguments" class="menu_link">Sending non-valid names as arguments</a><a href="http://blaag.haard.se/See-me-on-an-island" class="menu_link">See me on an island!</a><a href="http://blaag.haard.se/You-should-send-a-presentation-proposal-to-PyCon" class="menu_link">You should send a presentation proposal to PyCon</a><a href="http://blaag.haard.se/Using-the-AST-to-hack-constants-into-Python" class="menu_link">Using the AST to hack constants into Python</a><a href="http://blaag.haard.se/EuroPython-impressions" class="menu_link">EuroPython impressions</a><a href="http://blaag.haard.se/You-deserve-practice" class="menu_link">You deserve practice</a><a href="http://blaag.haard.se/Version-1-2-0-of-hgapi-released" class="menu_link">Version 1.2.0 of hgapi released</a><a href="http://blaag.haard.se/Protocol-specifications-written-in-Python" class="menu_link">Protocol specifications written in Python</a><a href="http://blaag.haard.se/PyCon-2012---the-other-stuff" class="menu_link">PyCon 2012 - the other stuff</a><a href="http://blaag.haard.se/rant--Dare-to-show-your-code" class="menu_link">[rant] Dare to show your code</a><a href="http://blaag.haard.se/Python-Closures-and-Decorators--Pt--2" class="menu_link">Python Closures and Decorators (Pt. 2)</a><a href="http://blaag.haard.se/Python-Closures-and-Decorators--Pt--1" class="menu_link">Python Closures and Decorators (Pt. 1)</a><a href="http://blaag.haard.se/Blaag-using-Genshi--greedy-bloggers-adding-ads--and-demographics--Also-ranting" class="menu_link">Blaag using Genshi, greedy bloggers adding ads, and demographics. Also ranting.</a><a href="http://blaag.haard.se/Your-favourite-programming-language-is-not-good-enough" class="menu_link">Your favourite programming language is not good enough</a><a href="http://blaag.haard.se/Python-API-to-git--gitapi" class="menu_link">Python API to git: gitapi</a><a href="http://blaag.haard.se/Explaining-comprehensions-to-programmers" class="menu_link">Explaining comprehensions to programmers</a><a href="http://blaag.haard.se/Why-Python-is-important-for-you" class="menu_link">Why Python is important for you</a><a href="http://blaag.haard.se/Using-Python-to-get-rid-of--doc" class="menu_link">Using Python to get rid of .doc</a><a href="http://blaag.haard.se/Mercurial-in-Python-3--promoting-hgapi" class="menu_link">Mercurial in Python 3: promoting hgapi</a><a href="http://blaag.haard.se/What-s-the-point-of-properties-in-Python" class="menu_link">What's the point of properties in Python?</a><a href="http://blaag.haard.se/hgapi-1-1-0" class="menu_link">hgapi 1.1.0</a><a href="http://blaag.haard.se/Jenkins" class="menu_link">Jenkins</a><a href="http://blaag.haard.se/Problem-exist-between-chair-and-keyboard" class="menu_link">Problem exist between chair and keyboard</a><a href="http://blaag.haard.se/Autohook-updated" class="menu_link">Autohook updated</a><a href="http://blaag.haard.se/Tools-for-better-Python" class="menu_link">Tools for better Python</a><a href="http://blaag.haard.se/On-useless-testing" class="menu_link">On useless testing</a><a href="http://blaag.haard.se/Styling" class="menu_link">Styling</a><a href="http://blaag.haard.se/RSS-support-is-go" class="menu_link">RSS support is go!</a><a href="http://blaag.haard.se/Progress-is-made" class="menu_link">Progress is made</a><a href="http://blaag.haard.se/It-s-alive" class="menu_link">﻿It's alive!</a>
+      </nav>
+    </section>
+    <!-- Add JavaScript after this point, it makes the page load faster when client does not need to interpret JS at start -->
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-27784490-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    <script type="text/javascript">
+      var  disqus_shortname = 'devrantblaag';
+      (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+      }());
+    </script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <title>Protocol specifications written in Python</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" type="text/css" href="/haze.css?1396595441"><link rel="stylesheet" type="text/css" href="/pygments.css?1396595441">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="description" content="Protocol specifications written in Python">
+  <meta name="author" content="Fredrik Håård">
+</head>
+<body>
+    <section class="page">
+      <header class="page">
+        <h1>Fredrik Håård's Blaag</h1>
+      </header>
+      <div class="blurbs">
+        <span>
+<a class="menu_link centered" href="http://twitter.com/fhaard">@fhaard</a>
+<div class="fineprint box blurb">
+I'm a programmer, consultant, developer, occasional teacher and
+speaker. Among my least disliked programming languages are Python, and
+a majority of these posts are related to Python in one way or another.
+</div>
+<div class="blurb">
+    <a href="https://flattr.com/submit/auto?user_id=fhaard&url=http://blaag.haard.se&title=Python%20Blaag&language=en_GB&tags=python,blog,programming&category=text">
+        <img src="https://api.flattr.com/button/flattr-badge-large.png"
+        alt="Flattr this blog" />
+    </a>
+</div>
+<div class='blurb'>
+	<a href='http://www.metallapan.se'>
+		<img src='http://metallapan.se/img/metallapan_small_black.png' style='position:relative; left: -15px'/>
+	</a>
+</div>
+        </span>
+        <a href="/rss.xml" class="menu_link centered">RSS Feed</a>
+      </div>
+      <div class="blog">
+        <article id="Protocol-specifications-written-in-Python" class="blog box">
+          <div class="document" id="Protocol-specifications-written-in-Python">
+            <div class="document" id="protocol-specifications-written-in-python">
+<h1 class="title">Protocol specifications written in Python</h1>
+<p>This is a writeup of a talk I did recently at Software Passion Summit
+in Gothenburg, Sweden. For more background info, see the <a class="reference external" href="/Using-Python-to-get-rid-of--doc">post</a> I did
+prior to the conference.</p>
+<p>Writing a specification in a full-blown programming language like
+Python has upsides and downsides. On the downside, Python is not
+designed as a declarative language, so any attempt to make it
+declarative (apart from just listing native data types) will require
+some kind of customization and/or tooling to work. On the upside,
+having a declaration in the language you write your servers in, you
+can use the specification itself, rather than a generated derivative of
+that specification, and writing custom - in this case minimal -
+generators for other languages is simple, since you can you Python
+introspection to traverse your specification, and the templating logic
+of your choice to generate source - this makes it possible, for
+example, to target a J2ME terminal that just won't accept existing
+solutions, and where dropping a 150K jar file for protocol
+implementation is not an alternative.</p>
+<p>For me, this journey started around 2006 when I started to lose control over
+protocol documentation and protocol versions for the protocol used
+between terminals and servers in the fleet management solution
+<a class="reference external" href="http://www.visualunits.se">Visual Units Logistics</a>. After looking for, and discarding, several existing
+tools, and after being inspired by the fact that we usually configure
+Javascript in Javascript, I started to sketch (as in, ink on paper)
+on what a protocol specification in Python would look like. This is
+a transcription of what I came up with at the time:</p>
+<blockquote>
+<pre class="code python literal-block">
+<span class="name">imei</span> <span class="operator">=</span> <span class="name builtin">long</span>
+<span class="name">log_message</span> <span class="operator">=</span> <span class="name">string</span>
+<span class="name">timestamp</span> <span class="operator">=</span> <span class="name builtin">long</span>
+<span class="name">voltage</span> <span class="operator">=</span> <span class="name builtin">float</span>
+<span class="name">log</span> <span class="operator">=</span> <span class="name">Message</span><span class="punctuation">(</span><span class="name">imei</span><span class="punctuation">,</span> <span class="name">timestamp</span><span class="punctuation">,</span>
+           <span class="name">log_message</span><span class="punctuation">,</span> <span class="name">voltage</span><span class="punctuation">)</span>
+<span class="name">protocol</span> <span class="operator">=</span> <span class="name">Protocol</span><span class="punctuation">(</span><span class="name">log</span><span class="punctuation">,</span> <span class="operator">...</span><span class="punctuation">)</span>
+<span class="name">protocol</span><span class="operator">.</span><span class="name">parse</span><span class="punctuation">(</span><span class="name">data</span><span class="punctuation">)</span>
+</pre>
+</blockquote>
+<p>With this as a target, I created the first version of a protocol
+implementation. It looked similar to the target version, but suffered
+from an abundance of repetition:</p>
+<blockquote>
+<pre class="code python literal-block">
+<span class="comment">#protocol.py</span>
+<span class="name">LOG</span> <span class="operator">=</span> <span class="literal number hex">0x023</span>
+<span class="name">ALIVE</span> <span class="operator">=</span> <span class="literal number hex">0x021</span>
+<span class="name">message</span> <span class="operator">=</span> <span class="name">Token</span><span class="punctuation">(</span><span class="literal string">'message'</span><span class="punctuation">,</span> <span class="literal string">'String'</span><span class="punctuation">,</span> <span class="literal string">'X'</span><span class="punctuation">)</span>
+<span class="name">timestamp</span> <span class="operator">=</span> <span class="name">Token</span><span class="punctuation">(</span><span class="literal string">'timestamp'</span><span class="punctuation">,</span> <span class="literal string">'long'</span><span class="punctuation">,</span> <span class="literal string">'q'</span><span class="punctuation">)</span>
+<span class="name">signal</span> <span class="operator">=</span> <span class="name">Token</span><span class="punctuation">(</span><span class="literal string">'signal'</span><span class="punctuation">,</span> <span class="literal string">'short'</span><span class="punctuation">,</span> <span class="literal string">'h'</span><span class="punctuation">)</span>
+<span class="name">voltage</span> <span class="operator">=</span> <span class="name">Token</span><span class="punctuation">(</span><span class="literal string">'voltage'</span><span class="punctuation">,</span> <span class="literal string">'short'</span><span class="punctuation">,</span> <span class="literal string">'h'</span><span class="punctuation">)</span>
+<span class="name">msg_log</span> <span class="operator">=</span> <span class="name">Message</span><span class="punctuation">(</span><span class="literal string">'LOG'</span><span class="punctuation">,</span> <span class="name">LOG</span><span class="punctuation">,</span> <span class="name">timestamp</span><span class="punctuation">,</span> <span class="name">signal</span><span class="punctuation">,</span> <span class="name">voltage</span><span class="punctuation">)</span>
+<span class="name">msg_alive</span> <span class="operator">=</span> <span class="name">Message</span><span class="punctuation">(</span><span class="literal string">'ALIVE'</span><span class="punctuation">,</span> <span class="name">ALIVE</span><span class="punctuation">,</span> <span class="name">timestamp</span><span class="punctuation">)</span>
+<span class="name">protocol</span> <span class="operator">=</span> <span class="name">Protocol</span><span class="punctuation">(</span><span class="name">version</span><span class="operator">=</span><span class="literal number float">1.0</span><span class="punctuation">,</span> <span class="name">messages</span><span class="operator">=</span><span class="punctuation">[</span><span class="name">msg_log</span><span class="punctuation">,</span><span class="name">msg_alive</span><span class="punctuation">])</span>
+<span class="comment">#usage</span>
+<span class="keyword namespace">from</span> <span class="name namespace">protocol</span> <span class="keyword namespace">import</span> <span class="name">protocol</span>
+<span class="name">parsed_data</span> <span class="operator">=</span> <span class="name">protocol</span><span class="operator">.</span><span class="name">parse</span><span class="punctuation">(</span><span class="name">data</span><span class="punctuation">)</span>
+<span class="name builtin">open</span><span class="punctuation">(</span><span class="literal string">'Protocol.java’,'</span><span class="name">w</span><span class="literal string">').write(protocol.java_protocol())</span>
+</pre>
+</blockquote>
+<p>The implementation around this is simple; the Token class knows how to
+parse a part of a message, the Message class knows which Tokens to use
+(and in which order), and the Protocol class selects the correct
+Message instance using a mapping of marker bytes to Message instances.</p>
+<p>However, no support is given for handling multiple versions of the
+protocol, and the amount of name duplication makes it really
+cumbersome - so I set out to create a better version.</p>
+<p>Some things complicated the creation of a better version. The worst
+problem of them all proved to be me, myself and I. At this time I had
+used Python for a couple of years, and started to get interested in
+the more sophisticated tools available. I had just taught myself
+about metaclasses, and thought they were an ingenious application of
+object orientation - and having found a shiny new hammer, I was
+itching to find a nail.</p>
+<p>Unfortunately, I had no pressing need for using metaclasses, so I
+invented one - I wanted to avoid some assignments in the protocol
+specification, so I used metaclasses to rip out the init (constructor)
+method and replace it with a version that registered the instance in a global map
+and then called the original init method. This is wrong in at least
+three ways - since it was not generic, it could have been done in the
+init method directly, if it would have been general it would have been
+a job for a decorator, and it is a really great way to obfuscate the
+code:</p>
+<blockquote>
+<pre class="code python literal-block">
+<span class="name">__MSG_MAPPING__</span> <span class="operator">=</span> <span class="punctuation">{}</span>
+<span class="keyword">def</span> <span class="name function">msg_initizer</span><span class="punctuation">(</span><span class="name">cls</span><span class="punctuation">,</span> <span class="name">old_init</span><span class="punctuation">):</span>
+    <span class="keyword">def</span> <span class="name function">new_init</span><span class="punctuation">(</span><span class="name builtin pseudo">self</span><span class="punctuation">,</span> <span class="name">name</span><span class="punctuation">,</span> <span class="name">marker</span><span class="punctuation">,</span> <span class="operator">*</span><span class="name">args</span><span class="punctuation">):</span>
+        <span class="name">__MSG_MAPPING__get</span><span class="punctuation">(</span><span class="name">cls</span><span class="punctuation">,</span> <span class="punctuation">{})[</span><span class="name">name</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="name builtin pseudo">self</span>
+        <span class="name">__MSG_MAPPING__</span><span class="punctuation">[</span><span class="name">cls</span><span class="punctuation">][</span><span class="name">struct</span><span class="operator">.</span><span class="name">pack</span><span class="punctuation">(</span><span class="literal string">&quot;!B&quot;</span><span class="punctuation">,</span> <span class="name">marker</span><span class="punctuation">)]</span> <span class="operator">=</span> <span class="name builtin pseudo">self</span>
+        <span class="name">old_init</span><span class="punctuation">(</span><span class="name builtin pseudo">self</span><span class="punctuation">,</span> <span class="name">name</span><span class="punctuation">,</span> <span class="name">marker</span><span class="punctuation">,</span> <span class="operator">*</span><span class="name">args</span><span class="punctuation">)</span>
+    <span class="keyword">return</span> <span class="name">new_init</span>
+<span class="keyword">class</span> <span class="name class">RegisterMeta</span><span class="punctuation">(</span><span class="name builtin">type</span><span class="punctuation">):</span>
+    <span class="keyword">def</span> <span class="name function">__new__</span><span class="punctuation">(</span><span class="name">cls</span><span class="punctuation">,</span> <span class="name">name</span><span class="punctuation">,</span> <span class="name">bases</span><span class="punctuation">,</span> <span class="name">attrs</span><span class="punctuation">):</span>
+        <span class="name">attrs</span><span class="punctuation">[</span><span class="literal string">'__init__'</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="name">msg_initizer</span><span class="punctuation">(</span><span class="name">cls</span><span class="punctuation">,</span>
+                                         <span class="name">attrs</span><span class="punctuation">[</span><span class="literal string">'__init__'</span><span class="punctuation">])</span>
+        <span class="keyword">return</span> <span class="name builtin">super</span><span class="punctuation">(</span><span class="name">RegisterMeta</span><span class="punctuation">,</span> <span class="name">cls</span><span class="punctuation">)</span><span class="operator">.</span><span class="name">__new__</span><span class="punctuation">(</span><span class="name">cls</span><span class="punctuation">,</span>
+                                      <span class="name">name</span><span class="punctuation">,</span> <span class="name">bases</span><span class="punctuation">,</span> <span class="name">attrs</span><span class="punctuation">)</span>
+<span class="keyword">class</span> <span class="name class">Message</span><span class="punctuation">(</span><span class="name builtin">object</span><span class="punctuation">):</span>
+    <span class="name">__metaclass__</span> <span class="operator">=</span> <span class="name">RegisterMeta</span>
+</pre>
+</blockquote>
+<p>This is the kind of code I'm not <a class="reference external" href="/rant--Dare-to-show-your-code/">proud</a> of, by the way. The worst part? It didn't even remove the duplication, although it
+lowered it somewhat - and the global registration of messages when
+loading a protocol really messed up any attempt of multiple version
+support. This was not the only problem; I also went overboard and wanted to support specifying protocol syntax, using a Flow class that defined legal ordering of messages. This might have been a good idea had we actually had any such requirements in our protocols; since they are “authenticate, do anything”, adding support for this just expanded the codebase and made the protocol specification more complex for extremely little gain (especially since we authenticate in different ways depending on the client). Adding insult to injury, this is even more verbose than the very first try.</p>
+<blockquote>
+<pre class="code python literal-block">
+<span class="comment">#In protocol.py</span>
+<span class="name">imei</span> <span class="operator">=</span> <span class="name">Token</span><span class="punctuation">(</span><span class="literal string">'imei'</span><span class="punctuation">,</span> <span class="literal string">'long'</span><span class="punctuation">)</span>
+<span class="name">message</span> <span class="operator">=</span> <span class="name">Token</span><span class="punctuation">(</span><span class="literal string">'message'</span><span class="punctuation">,</span> <span class="literal string">'String'</span><span class="punctuation">)</span>
+<span class="name">timestamp</span> <span class="operator">=</span> <span class="name">Token</span><span class="punctuation">(</span><span class="literal string">'timestamp'</span><span class="punctuation">,</span> <span class="literal string">'long'</span><span class="punctuation">)</span>
+<span class="name">signal</span> <span class="operator">=</span> <span class="name">Token</span><span class="punctuation">(</span><span class="literal string">'signal'</span><span class="punctuation">,</span> <span class="literal string">'short'</span><span class="punctuation">)</span>
+<span class="name">voltage</span> <span class="operator">=</span> <span class="name">Token</span><span class="punctuation">(</span><span class="literal string">'voltage'</span><span class="punctuation">,</span> <span class="literal string">'short'</span><span class="punctuation">)</span>
+<span class="name">auth</span> <span class="operator">=</span> <span class="name">Token</span><span class="punctuation">(</span><span class="literal string">'auth'</span><span class="punctuation">,</span> <span class="literal string">'String'</span><span class="punctuation">)</span>
+<span class="name">Markers</span><span class="punctuation">({</span><span class="literal string">'LOG'</span><span class="punctuation">:</span> <span class="literal number hex">0x023</span><span class="punctuation">,</span>
+    <span class="literal string">'ALIVE'</span><span class="punctuation">:</span> <span class="literal number hex">0x021</span><span class="punctuation">,</span>
+    <span class="literal string">'AUTH'</span><span class="punctuation">:</span> <span class="literal number hex">0x028</span><span class="punctuation">})</span>
+<span class="name">Message</span><span class="punctuation">(</span><span class="literal string">'LOG'</span><span class="punctuation">,</span> <span class="name">imei</span><span class="punctuation">,</span> <span class="name">timestamp</span><span class="punctuation">,</span> <span class="name">signal</span><span class="punctuation">,</span> <span class="name">voltage</span><span class="punctuation">)</span>
+<span class="name">Message</span><span class="punctuation">(</span><span class="literal string">'ALIVE'</span><span class="punctuation">,</span> <span class="name">imei</span><span class="punctuation">,</span> <span class="name">timestamp</span><span class="punctuation">)</span>
+<span class="name">Message</span><span class="punctuation">(</span><span class="literal string">'AUTH'</span><span class="punctuation">,</span> <span class="name">imei</span><span class="punctuation">,</span> <span class="name">timestamp</span><span class="punctuation">,</span> <span class="name">auth</span><span class="punctuation">)</span>
+<span class="name">Flow</span><span class="punctuation">([(</span><span class="literal string">'AUTH'</span><span class="punctuation">),</span> <span class="punctuation">(</span><span class="literal string">'LOG'</span><span class="punctuation">,</span> <span class="literal string">'ALIVE'</span><span class="punctuation">)])</span>
+<span class="comment">#Usage</span>
+<span class="name">protocol</span> <span class="operator">=</span> <span class="name">Protocol</span><span class="punctuation">(</span><span class="name">version</span><span class="operator">=</span><span class="literal number float">2.0</span><span class="punctuation">)</span>
+<span class="name">parsed_data</span> <span class="operator">=</span> <span class="name">protocol</span><span class="operator">.</span><span class="name">parse</span><span class="punctuation">(</span><span class="name">data</span><span class="punctuation">)</span> <span class="comment">#error if not auth parsed</span>
+</pre>
+</blockquote>
+<p>This entire attempt became a warning example - it shows the danger of finding new and interesting technology and applying it before grokking it, and it shows the danger of over engineering and feature creep. Luckily, once I got a good look on what I had created, even me-a-few-years-back could see that this was an abomination, which was subsequently quietly taken out back and put down without even making it as far as integration tests.</p>
+<p>Finally, and ongoing, I decided to apply a carefully measured amount of standard library magic to make the specifications more terse, and remove stuff that we did not need. This made the specification look something like this instead:</p>
+<blockquote>
+<pre class="code python literal-block">
+<span class="comment">#In protocol_4.2.py:</span>
+<span class="comment">#Tokens</span>
+<span class="name">t</span><span class="punctuation">(</span><span class="literal string">'message'</span><span class="punctuation">,</span> <span class="name">string</span><span class="punctuation">)</span>
+<span class="name">t</span><span class="punctuation">(</span><span class="literal string">'timestamp'</span><span class="punctuation">,</span>  <span class="name">i64</span><span class="punctuation">)</span>
+<span class="name">t</span><span class="punctuation">(</span><span class="literal string">'signal'</span><span class="punctuation">,</span> <span class="name">i16</span><span class="punctuation">)</span>
+<span class="name">t</span><span class="punctuation">(</span><span class="literal string">'voltage'</span><span class="punctuation">,</span> <span class="name">i16</span><span class="punctuation">)</span>
+<span class="comment">#Messages</span>
+<span class="name">LOG</span> <span class="operator">=</span> <span class="punctuation">(</span><span class="literal string">'A log message containing some debug info'</span><span class="punctuation">,</span>
+         <span class="literal number hex">0x023</span><span class="punctuation">,</span> <span class="name">timestamp</span><span class="punctuation">,</span> <span class="name">message</span><span class="punctuation">,</span> <span class="name">signal</span><span class="punctuation">,</span> <span class="name">voltage</span><span class="punctuation">)</span>
+<span class="name">ALIVE</span> <span class="operator">=</span> <span class="punctuation">(</span><span class="literal string">'A message to signal that the terminal alive'</span><span class="punctuation">,</span>
+     <span class="literal number hex">0x021</span><span class="punctuation">,</span> <span class="name">timestamp</span><span class="punctuation">)</span>
+<span class="comment">#Usage</span>
+<span class="name">protocols</span> <span class="operator">=</span> <span class="name">load_protocols</span><span class="punctuation">(</span><span class="literal string">'protocols'</span><span class="punctuation">)</span>
+<span class="name">parsed</span> <span class="operator">=</span> <span class="name">protocols</span><span class="punctuation">[</span><span class="literal number float">4.2</span><span class="punctuation">]</span><span class="operator">.</span><span class="name">parse</span><span class="punctuation">(</span><span class="name">data</span><span class="punctuation">)</span>
+<span class="name">protocols</span><span class="punctuation">[</span><span class="literal number float">4.2</span><span class="punctuation">]</span><span class="operator">.</span><span class="name">write_java</span><span class="punctuation">()</span> <span class="comment">#Writes to Protocol42.java</span>
+</pre>
+</blockquote>
+<p>At one time, it was even terser (as in the earlier blog <a class="reference external" href="/Using-Python-to-get-rid-of--doc">post</a>), but that version didn’t really pan out, and the version in production is very similar to this one. Name duplication is avoided using two different techniques - the tokens are defined by calling a method <tt class="docutils literal">t</tt> that creates the Token instance and injects it back into the calling namespace using the supplied name:</p>
+<blockquote>
+<pre class="code python literal-block">
+<span class="comment">#In types.py</span>
+<span class="keyword namespace">from</span> <span class="name namespace">inspect</span> <span class="keyword namespace">import</span> <span class="name">currentframe</span>
+<span class="keyword">def</span> <span class="name function">t</span><span class="punctuation">(</span><span class="name">name</span><span class="punctuation">,</span> <span class="name">data_type</span><span class="punctuation">):</span>
+    <span class="literal string doc">&quot;&quot;&quot;Inserts name = (name, data_type) in locals()
+    of calling scope&quot;&quot;&quot;</span>
+    <span class="name">currentframe</span><span class="punctuation">()</span><span class="operator">.</span><span class="name">f_back</span><span class="operator">.</span><span class="name">f_locals</span><span class="punctuation">[</span><span class="name">name</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="punctuation">(</span><span class="name">name</span><span class="punctuation">,</span> <span class="name">data_type</span><span class="punctuation">)</span>
+</pre>
+</blockquote>
+<p>To some, this may seem like blasphemy, but consider this - the implementation is extremely simple in concept, it gets the work done, and it is easy to explain. Another change is that the messages are created solely by using <tt class="docutils literal">inspect</tt> to extract members of the module that look like messages - name in all caps, and a tuple. Worth noting might be that there was error handling initially, but I removed that to make parsing fail, rather than accept a specification that may or may not have contained errors.</p>
+<p>Finally, java source and html documentation is created by traversing the protocol instance, and feeding the information into simple templates - experiments were made using literate programming using ReST to create documentation, but in the end that tended to obfuscate rather than the reverse. This may be an effect of naive implementation, or that the problem does not lend itself well to literate programming, but either way it was not worth it in this case.</p>
+<p>There is a working and slightly generalized version available at
+<a class="reference external" href="https://bitbucket.org/haard/protocol-example">bitbucket</a>, and it you would like to hear more about this (and more
+details about Python magic used), you can buy a ticket to
+<a class="reference external" href="https://ep2012.europython.eu/">EuroPython</a> - you’ll have until Sunday to vote for my proposals (and
+others).</p>
+<blockquote>
+</blockquote>
+</div>
+          </div>
+          <div class="timestamp">
+            Blaag created 120329 10:22
+          </div>
+          <div class="fullcomments">
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+              /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+              var disqus_shortname = 'devrantblaag';
+              var disqus_identifier = 'Protocol-specifications-written-in-Python';
+              /* * * DON'T EDIT BELOW THIS LINE * * */
+              (function(d) {
+              var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+            <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+          </div>
+        </article>
+        <footer class="page">
+          <p class="fineprint"><script type="text/javascript"><!--
+google_ad_client = "ca-pub-8024096273645887";
+/* Blaag-footer-smaller */
+google_ad_slot = "2686503142";
+google_ad_width = 468;
+google_ad_height = 60;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<br/>
+
+Page created using <a
+href='https://bitbucket.org/haard/blaag'>blaag</a> 
+and abusing <a href='http://docutils.sourceforge.net'>docutils</a>.
+<a href='/rss.xml'>RSS Feed</a> generated using <a
+href='http://www.dalkescientific.com/Python/PyRSS2Gen.html'>PyRSS2Gen</a>.
+</p>
+        </footer>
+</div>
+      <nav class="blogs">
+        <a href="/" class="menu_link">- index -</a>
+        <h4>My recent posts</h4>
+        <a href="http://blaag.haard.se/Call-for-Proposals--PyCon-Sweden-2014" class="menu_link">Call for Proposals: PyCon Sweden 2014!</a><a href="http://blaag.haard.se/Basic-Python-course-in-Karlskona" class="menu_link">Basic Python course in Karlskona</a><a href="http://blaag.haard.se/Embedding-Jython-in-Java-Applications" class="menu_link">Embedding Jython in Java Applications</a><a href="http://blaag.haard.se/I-accidentally-the-server" class="menu_link">I accidentally the server</a><a href="http://blaag.haard.se/BitSynchHub-now-supports-git--gitapi-released--new-hgapi-version" class="menu_link">BitSynchHub now supports git, gitapi released, new hgapi version</a><a href="http://blaag.haard.se/Synchronize-Bitbucket-to-Github-automatically" class="menu_link">Synchronize Bitbucket to Github automatically</a><a href="http://blaag.haard.se/See-you-in-Florence-this-summer" class="menu_link">See you in Florence this summer?</a><a href="http://blaag.haard.se/Batteries-included--Download--unzip-and-parse-in-13-lines" class="menu_link">Batteries included: Download, unzip and parse in 13 lines</a><a href="http://blaag.haard.se/WGS-84-distance-calculations-at-the-speed-of-C" class="menu_link">WGS-84 distance calculations at the speed of C</a><a href="http://blaag.haard.se/pyRest-part-5--You-can-actually-use-this" class="menu_link">pyRest part 5: You can actually use this</a><a href="http://blaag.haard.se/pyRest-part-4--Separating-the-parts" class="menu_link">pyRest part 4: Separating the parts</a><a href="http://blaag.haard.se/pyRest-part-3--Routing-and-responsibilities" class="menu_link">pyRest part 3: Routing and responsibilities</a><a href="http://blaag.haard.se/pyRest-part-2--Hooking-the-API" class="menu_link">pyRest part 2: Hooking the API</a><a href="http://blaag.haard.se/Simple-REST-ful---ish--exposure-of-Python-APIs" class="menu_link">Simple REST-ful (-ish) exposure of Python APIs</a><a href="http://blaag.haard.se/Sending-non-valid-names-as-arguments" class="menu_link">Sending non-valid names as arguments</a><a href="http://blaag.haard.se/See-me-on-an-island" class="menu_link">See me on an island!</a><a href="http://blaag.haard.se/You-should-send-a-presentation-proposal-to-PyCon" class="menu_link">You should send a presentation proposal to PyCon</a><a href="http://blaag.haard.se/Using-the-AST-to-hack-constants-into-Python" class="menu_link">Using the AST to hack constants into Python</a><a href="http://blaag.haard.se/EuroPython-impressions" class="menu_link">EuroPython impressions</a><a href="http://blaag.haard.se/You-deserve-practice" class="menu_link">You deserve practice</a><a href="http://blaag.haard.se/Version-1-2-0-of-hgapi-released" class="menu_link">Version 1.2.0 of hgapi released</a><a href="http://blaag.haard.se/Protocol-specifications-written-in-Python" class="menu_link">Protocol specifications written in Python</a><a href="http://blaag.haard.se/PyCon-2012---the-other-stuff" class="menu_link">PyCon 2012 - the other stuff</a><a href="http://blaag.haard.se/rant--Dare-to-show-your-code" class="menu_link">[rant] Dare to show your code</a><a href="http://blaag.haard.se/Python-Closures-and-Decorators--Pt--2" class="menu_link">Python Closures and Decorators (Pt. 2)</a><a href="http://blaag.haard.se/Python-Closures-and-Decorators--Pt--1" class="menu_link">Python Closures and Decorators (Pt. 1)</a><a href="http://blaag.haard.se/Blaag-using-Genshi--greedy-bloggers-adding-ads--and-demographics--Also-ranting" class="menu_link">Blaag using Genshi, greedy bloggers adding ads, and demographics. Also ranting.</a><a href="http://blaag.haard.se/Your-favourite-programming-language-is-not-good-enough" class="menu_link">Your favourite programming language is not good enough</a><a href="http://blaag.haard.se/Python-API-to-git--gitapi" class="menu_link">Python API to git: gitapi</a><a href="http://blaag.haard.se/Explaining-comprehensions-to-programmers" class="menu_link">Explaining comprehensions to programmers</a><a href="http://blaag.haard.se/Why-Python-is-important-for-you" class="menu_link">Why Python is important for you</a><a href="http://blaag.haard.se/Using-Python-to-get-rid-of--doc" class="menu_link">Using Python to get rid of .doc</a><a href="http://blaag.haard.se/Mercurial-in-Python-3--promoting-hgapi" class="menu_link">Mercurial in Python 3: promoting hgapi</a><a href="http://blaag.haard.se/What-s-the-point-of-properties-in-Python" class="menu_link">What's the point of properties in Python?</a><a href="http://blaag.haard.se/hgapi-1-1-0" class="menu_link">hgapi 1.1.0</a><a href="http://blaag.haard.se/Jenkins" class="menu_link">Jenkins</a><a href="http://blaag.haard.se/Problem-exist-between-chair-and-keyboard" class="menu_link">Problem exist between chair and keyboard</a><a href="http://blaag.haard.se/Autohook-updated" class="menu_link">Autohook updated</a><a href="http://blaag.haard.se/Tools-for-better-Python" class="menu_link">Tools for better Python</a><a href="http://blaag.haard.se/On-useless-testing" class="menu_link">On useless testing</a><a href="http://blaag.haard.se/Styling" class="menu_link">Styling</a><a href="http://blaag.haard.se/RSS-support-is-go" class="menu_link">RSS support is go!</a><a href="http://blaag.haard.se/Progress-is-made" class="menu_link">Progress is made</a><a href="http://blaag.haard.se/It-s-alive" class="menu_link">﻿It's alive!</a>
+      </nav>
+    </section>
+    <!-- Add JavaScript after this point, it makes the page load faster when client does not need to interpret JS at start -->
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-27784490-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    <script type="text/javascript">
+      var  disqus_shortname = 'devrantblaag';
+      (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+      }());
+    </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <title>WGS-84 distance calculations at the speed of C</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" type="text/css" href="/haze.css?1396595441"><link rel="stylesheet" type="text/css" href="/pygments.css?1396595441">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="description" content="WGS-84 distance calculations at the speed of C">
+  <meta name="author" content="Fredrik Håård">
+</head>
+<body>
+    <section class="page">
+      <header class="page">
+        <h1>Fredrik Håård's Blaag</h1>
+      </header>
+      <div class="blurbs">
+        <span>
+<a class="menu_link centered" href="http://twitter.com/fhaard">@fhaard</a>
+<div class="fineprint box blurb">
+I'm a programmer, consultant, developer, occasional teacher and
+speaker. Among my least disliked programming languages are Python, and
+a majority of these posts are related to Python in one way or another.
+</div>
+<div class="blurb">
+    <a href="https://flattr.com/submit/auto?user_id=fhaard&url=http://blaag.haard.se&title=Python%20Blaag&language=en_GB&tags=python,blog,programming&category=text">
+        <img src="https://api.flattr.com/button/flattr-badge-large.png"
+        alt="Flattr this blog" />
+    </a>
+</div>
+<div class='blurb'>
+	<a href='http://www.metallapan.se'>
+		<img src='http://metallapan.se/img/metallapan_small_black.png' style='position:relative; left: -15px'/>
+	</a>
+</div>
+        </span>
+        <a href="/rss.xml" class="menu_link centered">RSS Feed</a>
+      </div>
+      <div class="blog">
+        <article id="WGS-84-distance-calculations-at-the-speed-of-C" class="blog box">
+          <div class="document" id="WGS-84-distance-calculations-at-the-speed-of-C">
+            <div class="document" id="wgs-84-distance-calculations-at-the-speed-of-c">
+<h1 class="title">WGS-84 distance calculations at the speed of C</h1>
+<p>When we started out doing fleet management at Visual Units, one thing was really hard to get right - distance calculations. There was no end of information available, but most-to-all of it was on a level of mathematics far beyond a poor developer who feels that anything beyond discrete mathematics and basic geometry and statistics really should be somebody else's problem. The implementations that could be found were closed-source licensed version we really could not afford at that stage.</p>
+<p>For a while we got by using a solution that relied on having a variant of Lambert conformal conic projection coordinates - it was sufficiently exact if not perfect, and our maps used the same projection, so it worked - although there was the added burden of transforming our stored (WGS-84) coordinates to Lambert every time we needed calculations done. A couple of years ago, however, we switched to <a class="reference external" href="https://developers.google.com/maps/">Google Maps API</a> and so we really had no use for Lambert - and increased load and precision demands made using the current solution a worse and worse choice.</p>
+<p>Enter <a class="reference external" href="http://www.movable-type.co.uk/">Chris Veness</a>. Or rather, enter his <a class="reference external" href="http://www.movable-type.co.uk/scripts/latlong-vincenty.html">implementation</a> of the <a class="reference external" href="http://www.ngs.noaa.gov/PUBS_LIB/inverse.pdf">Vincenty inverse formula</a> (pdf). Even though the math is beyond me, porting the Javascript implementation to Python was straightforward, and some testing showed that <a class="reference external" href="https://bitbucket.org/visualunits/vutools/src/e18fdfb9eed5f5b33c00c715a2a18ca888cfe559/distance/distance.py">the result</a> was both faster and had better precision than the previous solution.</p>
+<p>Fast-forward to a few months ago, suddenly the performance is starting to look like something that could become a problem. We have many reasons for doing distance calculations, and while the batch jobs were not a problem, any amount of time that can be shaved off user-initiated actions is welcome.</p>
+<p>So, I thought to myself, I've ported it once, how hard can it be to do it again? After all, when raw speed becomes the issue, the Python programmer reaches for C. Porting it was once again straightforward, mapping the Python function</p>
+<blockquote>
+<pre class="code python literal-block">
+<span class="keyword">def</span> <span class="name function">distance</span><span class="punctuation">(</span><span class="name">x1</span><span class="punctuation">,</span> <span class="name">y1</span><span class="punctuation">,</span> <span class="name">x2</span><span class="punctuation">,</span> <span class="name">y2</span><span class="punctuation">):</span>
+    <span class="operator">...</span>
+</pre>
+</blockquote>
+<p>into</p>
+<blockquote>
+<pre class="code c literal-block">
+<span class="keyword">const</span> <span class="keyword type">double</span> <span class="name function">distance</span><span class="punctuation">(</span><span class="keyword">const</span> <span class="keyword type">double</span> <span class="name">x1</span><span class="punctuation">,</span> <span class="keyword">const</span> <span class="keyword type">double</span> <span class="name">y1</span><span class="punctuation">,</span>
+                      <span class="keyword">const</span> <span class="keyword type">double</span> <span class="name">x2</span><span class="punctuation">,</span> <span class="keyword">const</span> <span class="keyword type">double</span> <span class="name">y2</span><span class="punctuation">)</span>
+<span class="punctuation">{</span>
+    <span class="punctuation">...</span>
+</pre>
+</blockquote>
+<p>The <a class="reference external" href="https://bitbucket.org/visualunits/vutools/src/e18fdfb9eed5/distance/distance.c">resulting C code</a> is almost identical to he Python (and Javascript) implementations but runs about 6 times faster than the Python implementation. Allowing batch submission of calculations instead of calling once for every calculation, eliminating some FFI overhead, would increase the speed further.</p>
+<blockquote>
+<pre class="code literal-block">
+$ python2.7 -m tests.test_distance
+Time elapsed for 100000 calculations in
+    Python: 1952.70
+    C: 300.46
+    Factor: 6.50
+</pre>
+</blockquote>
+<p>Wrapping the C and calling it was simple enough using ctypes, and I've added fallback to the Python implementation if the C shared library cannot be found; a small __init__.py in the package hooks up the correct version:</p>
+<pre class="code python literal-block">
+<span class="keyword namespace">from</span> <span class="name namespace">.distance</span> <span class="keyword namespace">import</span> <span class="name">distance</span> <span class="keyword">as</span> <span class="name">_py_distance</span>
+<span class="keyword">try</span><span class="punctuation">:</span>
+    <span class="keyword namespace">from</span> <span class="name namespace">ctypes</span> <span class="keyword namespace">import</span> <span class="name">cdll</span><span class="punctuation">,</span> <span class="name">c_double</span>
+    <span class="name">dll</span> <span class="operator">=</span> <span class="name">cdll</span><span class="operator">.</span><span class="name">LoadLibrary</span><span class="punctuation">(</span><span class="literal string">'cDistance.so'</span><span class="punctuation">)</span>
+    <span class="name">dll</span><span class="operator">.</span><span class="name">distance</span><span class="operator">.</span><span class="name">restype</span> <span class="operator">=</span> <span class="name">c_double</span>
+    <span class="name">dll</span><span class="operator">.</span><span class="name">distance</span><span class="operator">.</span><span class="name">argtypes</span> <span class="operator">=</span> <span class="punctuation">[</span><span class="name">c_double</span><span class="punctuation">,</span> <span class="name">c_double</span><span class="punctuation">,</span> <span class="name">c_double</span><span class="punctuation">,</span> <span class="name">c_double</span><span class="punctuation">]</span>
+    <span class="name">distance</span> <span class="operator">=</span> <span class="name">dll</span><span class="operator">.</span><span class="name">distance</span>
+    <span class="name">_c_distance</span> <span class="operator">=</span> <span class="name">dll</span><span class="operator">.</span><span class="name">distance</span>
+<span class="keyword">except</span> <span class="name exception">OSError</span><span class="punctuation">:</span> <span class="comment">#Fall back to Python implementation</span>
+    <span class="name">distance</span> <span class="operator">=</span> <span class="name">_py_distance</span>
+</pre>
+<p>Of course, this depends on the C code being compiled into cDistance.so and that file being available for linking - and it keeps the .so hardcoded so a windows DLL wont work. I really did intend to clean it up more before making it open source, but since I've been meaning to start open sourcing some of our tools for years now and never really found the time, I thought it would be better to thow it out there, and postpone making it pretty instead. I hope someone can find some use in this, and I'll try to get it cleaned upp and packaged Real Soon Now.</p>
+<!-- keywords: python coordinates google maps c ctypes ffi -->
+</div>
+          </div>
+          <div class="timestamp">
+            Blaag created 130221 18:46
+          </div>
+          <div class="fullcomments">
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+              /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+              var disqus_shortname = 'devrantblaag';
+              var disqus_identifier = 'WGS-84-distance-calculations-at-the-speed-of-C';
+              /* * * DON'T EDIT BELOW THIS LINE * * */
+              (function(d) {
+              var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+            <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+          </div>
+        </article>
+        <footer class="page">
+          <p class="fineprint"><script type="text/javascript"><!--
+google_ad_client = "ca-pub-8024096273645887";
+/* Blaag-footer-smaller */
+google_ad_slot = "2686503142";
+google_ad_width = 468;
+google_ad_height = 60;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<br/>
+
+Page created using <a
+href='https://bitbucket.org/haard/blaag'>blaag</a> 
+and abusing <a href='http://docutils.sourceforge.net'>docutils</a>.
+<a href='/rss.xml'>RSS Feed</a> generated using <a
+href='http://www.dalkescientific.com/Python/PyRSS2Gen.html'>PyRSS2Gen</a>.
+</p>
+        </footer>
+</div>
+      <nav class="blogs">
+        <a href="/" class="menu_link">- index -</a>
+        <h4>My recent posts</h4>
+        <a href="http://blaag.haard.se/Call-for-Proposals--PyCon-Sweden-2014" class="menu_link">Call for Proposals: PyCon Sweden 2014!</a><a href="http://blaag.haard.se/Basic-Python-course-in-Karlskona" class="menu_link">Basic Python course in Karlskona</a><a href="http://blaag.haard.se/Embedding-Jython-in-Java-Applications" class="menu_link">Embedding Jython in Java Applications</a><a href="http://blaag.haard.se/I-accidentally-the-server" class="menu_link">I accidentally the server</a><a href="http://blaag.haard.se/BitSynchHub-now-supports-git--gitapi-released--new-hgapi-version" class="menu_link">BitSynchHub now supports git, gitapi released, new hgapi version</a><a href="http://blaag.haard.se/Synchronize-Bitbucket-to-Github-automatically" class="menu_link">Synchronize Bitbucket to Github automatically</a><a href="http://blaag.haard.se/See-you-in-Florence-this-summer" class="menu_link">See you in Florence this summer?</a><a href="http://blaag.haard.se/Batteries-included--Download--unzip-and-parse-in-13-lines" class="menu_link">Batteries included: Download, unzip and parse in 13 lines</a><a href="http://blaag.haard.se/WGS-84-distance-calculations-at-the-speed-of-C" class="menu_link">WGS-84 distance calculations at the speed of C</a><a href="http://blaag.haard.se/pyRest-part-5--You-can-actually-use-this" class="menu_link">pyRest part 5: You can actually use this</a><a href="http://blaag.haard.se/pyRest-part-4--Separating-the-parts" class="menu_link">pyRest part 4: Separating the parts</a><a href="http://blaag.haard.se/pyRest-part-3--Routing-and-responsibilities" class="menu_link">pyRest part 3: Routing and responsibilities</a><a href="http://blaag.haard.se/pyRest-part-2--Hooking-the-API" class="menu_link">pyRest part 2: Hooking the API</a><a href="http://blaag.haard.se/Simple-REST-ful---ish--exposure-of-Python-APIs" class="menu_link">Simple REST-ful (-ish) exposure of Python APIs</a><a href="http://blaag.haard.se/Sending-non-valid-names-as-arguments" class="menu_link">Sending non-valid names as arguments</a><a href="http://blaag.haard.se/See-me-on-an-island" class="menu_link">See me on an island!</a><a href="http://blaag.haard.se/You-should-send-a-presentation-proposal-to-PyCon" class="menu_link">You should send a presentation proposal to PyCon</a><a href="http://blaag.haard.se/Using-the-AST-to-hack-constants-into-Python" class="menu_link">Using the AST to hack constants into Python</a><a href="http://blaag.haard.se/EuroPython-impressions" class="menu_link">EuroPython impressions</a><a href="http://blaag.haard.se/You-deserve-practice" class="menu_link">You deserve practice</a><a href="http://blaag.haard.se/Version-1-2-0-of-hgapi-released" class="menu_link">Version 1.2.0 of hgapi released</a><a href="http://blaag.haard.se/Protocol-specifications-written-in-Python" class="menu_link">Protocol specifications written in Python</a><a href="http://blaag.haard.se/PyCon-2012---the-other-stuff" class="menu_link">PyCon 2012 - the other stuff</a><a href="http://blaag.haard.se/rant--Dare-to-show-your-code" class="menu_link">[rant] Dare to show your code</a><a href="http://blaag.haard.se/Python-Closures-and-Decorators--Pt--2" class="menu_link">Python Closures and Decorators (Pt. 2)</a><a href="http://blaag.haard.se/Python-Closures-and-Decorators--Pt--1" class="menu_link">Python Closures and Decorators (Pt. 1)</a><a href="http://blaag.haard.se/Blaag-using-Genshi--greedy-bloggers-adding-ads--and-demographics--Also-ranting" class="menu_link">Blaag using Genshi, greedy bloggers adding ads, and demographics. Also ranting.</a><a href="http://blaag.haard.se/Your-favourite-programming-language-is-not-good-enough" class="menu_link">Your favourite programming language is not good enough</a><a href="http://blaag.haard.se/Python-API-to-git--gitapi" class="menu_link">Python API to git: gitapi</a><a href="http://blaag.haard.se/Explaining-comprehensions-to-programmers" class="menu_link">Explaining comprehensions to programmers</a><a href="http://blaag.haard.se/Why-Python-is-important-for-you" class="menu_link">Why Python is important for you</a><a href="http://blaag.haard.se/Using-Python-to-get-rid-of--doc" class="menu_link">Using Python to get rid of .doc</a><a href="http://blaag.haard.se/Mercurial-in-Python-3--promoting-hgapi" class="menu_link">Mercurial in Python 3: promoting hgapi</a><a href="http://blaag.haard.se/What-s-the-point-of-properties-in-Python" class="menu_link">What's the point of properties in Python?</a><a href="http://blaag.haard.se/hgapi-1-1-0" class="menu_link">hgapi 1.1.0</a><a href="http://blaag.haard.se/Jenkins" class="menu_link">Jenkins</a><a href="http://blaag.haard.se/Problem-exist-between-chair-and-keyboard" class="menu_link">Problem exist between chair and keyboard</a><a href="http://blaag.haard.se/Autohook-updated" class="menu_link">Autohook updated</a><a href="http://blaag.haard.se/Tools-for-better-Python" class="menu_link">Tools for better Python</a><a href="http://blaag.haard.se/On-useless-testing" class="menu_link">On useless testing</a><a href="http://blaag.haard.se/Styling" class="menu_link">Styling</a><a href="http://blaag.haard.se/RSS-support-is-go" class="menu_link">RSS support is go!</a><a href="http://blaag.haard.se/Progress-is-made" class="menu_link">Progress is made</a><a href="http://blaag.haard.se/It-s-alive" class="menu_link">﻿It's alive!</a>
+      </nav>
+    </section>
+    <!-- Add JavaScript after this point, it makes the page load faster when client does not need to interpret JS at start -->
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-27784490-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    <script type="text/javascript">
+      var  disqus_shortname = 'devrantblaag';
+      (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+      }());
+    </script>
+</body>
+</html>
